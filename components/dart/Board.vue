@@ -22,7 +22,6 @@ const emit = defineEmits<{
 const board = ref<SVGSVGElement>();
 
 function handleClick(evt: MouseEvent, dartThrow: DartThrow) {
-  console.log(evt);
   evt.stopPropagation();
 
   // Retrive coordinates of the click event in svg coordinates

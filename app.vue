@@ -6,7 +6,10 @@ import ColorModeButton from "~/components/ui/ColorModeButton.vue";
   <UApp>
     <div class="h-screen">
       <header class="h-12 border-b flex items-center p-3">
-        Fléchettes
+        <NuxtLink to="/" class="inline-flex gap-1.5 text-xl items-center">
+          <UIcon name="i-lucide-target" />
+          <span class="font-extrabold">Fléchettes</span>
+        </NuxtLink>
         <div class="grow" />
         <ColorModeButton />
       </header>

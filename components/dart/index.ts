@@ -44,13 +44,13 @@ export const DartThrows: Record<DartThrowId, DartThrow> = {
       id: doubleId,
       color: isBlackOrRed ? Colors.Red : Colors.Green,
       score: score * 2,
-      label: `2 × ${score}`,
+      label: `${score} × 2`,
     };
     acc[tripleId] = {
       id: tripleId,
       color: isBlackOrRed ? Colors.Red : Colors.Green,
       score: score * 3,
-      label: `3 × ${score}`,
+      label: `${score} × 3`,
     };
     return acc;
   }, {} as Record<Exclude<DartThrowId, "OUT" | "SB" | "DB">, DartThrow>),
@@ -64,7 +64,7 @@ export const DartThrows: Record<DartThrowId, DartThrow> = {
     id: "DB",
     color: Colors.Red,
     score: 50,
-    label: "2 × Bull",
+    label: "Bull × 2",
   },
 };
 
