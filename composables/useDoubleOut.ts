@@ -1,9 +1,13 @@
 import { useLocalStorage } from "@vueuse/core";
+import { useSound } from "@vueuse/sound";
 import {
   DartThrows,
   type DartThrow,
   type DartThrowRecord,
-} from "~/components/dart";
+} from "~/components/Dart";
+import failTrumpetMp3 from "assets/sounds/fail-trumpet.mp3";
+import superHitMp3 from "assets/sounds/super-hit.mp3";
+import hitDartMp3 from "assets/sounds/hit-dart.mp3";
 
 type Combination = { total: number; throws: DartThrow[] };
 
@@ -27,36 +31,47 @@ for (let i = allPossibleThrows.length - 1; i >= 0; i--) {
   }
 }
 
-export type GameState = {
+export type DoubleOutGame = {
   id: string;
   createdAt: number;
+  score: 301 | 501;
   players: { name: string; score: number; throws: DartThrowRecord[][] }[];
   round: number;
   currentPlayerIndex: number;
   winnerIndex: number | null;
+  version: number; // Versioning for future updates
 };
 
-export function createNew301(playerName: string[]) {
-  const gameId = `game-301-${Date.now()}`;
-  useLocalStorage<GameState>(gameId, {
+export function createNewDoubleOut(score: 301 | 501, playerName: string[]) {
+  const gameId = `double-out-${Date.now()}`;
+  useLocalStorage<DoubleOutGame>(gameId, {
     id: gameId,
     createdAt: Date.now(),
-    players: playerName.map((name) => ({ name, score: 301, throws: [] })),
+    score,
+    players: playerName.map((name) => ({ name, score, throws: [] })),
     round: 1,
     currentPlayerIndex: 0,
     winnerIndex: null,
+    version: 1,
   });
   return gameId;
 }
 
 /**
- * Return the logic of a game 301 in darts
+ * Return the logic of a Double Out game.
  */
-export function use301(gameId: string) {
-  const gameState = useLocalStorage<GameState>(gameId, {} as GameState, {
-    deep: true,
-  });
+export function useDoubleOut(gameId: string) {
+  const failSound = useSound(failTrumpetMp3);
+  const hitDartSound = useSound(hitDartMp3);
+  const superHitSound = useSound(superHitMp3);
+
+  const gameState = useLocalStorage<DoubleOutGame>(
+    gameId,
+    {} as DoubleOutGame,
+    { deep: true }
+  );
   if (Object.keys(gameState.value).length === 0) {
+    gameState.value = null; // Remove the game state from localStorage
     throw new Error("Game data not found. Please start a new game.");
   }
 
@@ -71,7 +86,17 @@ export function use301(gameId: string) {
       : null
   );
 
-  const waitingForConfirmation = ref(false);
+  /**
+   * Waiting confirmation when the player has thrown 3 darts or will win
+   * with the current throws.
+   */
+  const waitingForConfirmation = computed(() => {
+    return (
+      currentThrows.value.length === 3 ||
+      gameState.value.players[gameState.value.currentPlayerIndex].score ===
+        currentThrowsScore.value
+    );
+  });
 
   function recordThrow(
     dartThrow: DartThrow,
@@ -87,18 +112,15 @@ export function use301(gameId: string) {
       coordinates,
     });
 
-    if (
-      currentThrows.value.length === 3 ||
-      gameState.value.players[gameState.value.currentPlayerIndex].score ===
-        currentThrowsScore.value
-    ) {
-      waitingForConfirmation.value = true;
-      return;
+    if (dartThrow.score >= 18) {
+      superHitSound.play();
+    } else {
+      hitDartSound.play();
     }
   }
 
-  function confirmThrows() {
-    if (!waitingForConfirmation.value) return;
+  function confirmThrows(bypassConfirmation = false) {
+    if (!waitingForConfirmation.value && !bypassConfirmation) return;
 
     const currentPlayer =
       gameState.value.players[gameState.value.currentPlayerIndex];
@@ -106,6 +128,11 @@ export function use301(gameId: string) {
 
     currentPlayer.throws[roundIndex] = [...currentThrows.value];
     currentPlayer.score -= currentThrowsScore.value;
+
+    if (currentThrowsScore.value < 10) {
+      failSound.play(); // Play fail sound if score is less than 10
+    }
+
     if (currentPlayer.score < 0) {
       currentPlayer.score += currentThrowsScore.value; // Revert score if it goes below zero
     }
@@ -113,7 +140,6 @@ export function use301(gameId: string) {
       gameState.value.winnerIndex = gameState.value.currentPlayerIndex; // Set the winner if score is zero
     }
 
-    waitingForConfirmation.value = false;
     currentThrows.value.length = 0;
 
     gameState.value.currentPlayerIndex++;
@@ -167,7 +193,6 @@ export function use301(gameId: string) {
       return;
     }
     currentThrows.value.pop();
-    waitingForConfirmation.value = false;
   }
 
   const canUndoTurn = computed(() => {
@@ -200,9 +225,8 @@ export function use301(gameId: string) {
     currentPlayer.throws.splice(gameState.value.round - 1, 1);
     // Reset the score for the current player
     currentPlayer.score += currentThrowsScore.value;
-    waitingForConfirmation.value = true;
   }
-// 
+
   // Players sorted by score
   const rankings = computed(() =>
     gameState.value.players.toSorted((p1, p2) => p1.score - p2.score)

@@ -15,49 +15,25 @@ const {
   currentThrowsScore,
   winningCombination,
   recordThrow,
-} = use301(route.params.game as string);
+} = useDoubleOut(route.params.double_out_id as string);
+
+defineShortcuts({
+  enter: () => confirmThrows(true),
+  backspace: () => undoThrow(),
+  escape: () => undoTurn(),
+});
 </script>
 
 <template>
   <div>
-    <div
-      v-if="winner"
-      class="absolute inset-0 z-10 w-full p-12 bg-default/50 backdrop-blur-lg font-bold space-y-12"
-    >
-      <UButton
-        color="error"
-        icon="i-lucide-arrow-left"
-        size="lg"
-        @click="undoTurn"
-        >Revenir au tour précédent</UButton
-      >
+    <DartWinnerOverlay
+      :winner="winner"
+      :rankings="rankings"
+      @undo-turn="undoTurn"
+    />
 
-      <div class="text-center text-8xl mb-12">
-        {{ winner?.name }} a gagné ! 🏆
-      </div>
-      <div class="text-4xl leading-relaxed">
-        <div
-          v-for="(player, i) in rankings"
-          :key="i"
-          class="grid grid-cols-2 max-w-md mx-auto gap-3"
-        >
-          <span class="text-left">
-            {{ i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1 }}
-            {{ player.name }}
-          </span>
-          <span class="text-right"> {{ player.score }} </span>
-        </div>
-      </div>
-
-      <div class="mt-6 text-center">
-        <UButton color="primary" icon="i-lucide-home" size="xl" to="/">
-          Retour au menu
-        </UButton>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3">
-      <div class="col-span-2">
+    <div class="grid grid-cols-3 gap-3">
+      <div class="space-y-3 col-span-2">
         <div class="flex gap-3">
           <UButton
             color="error"
@@ -65,8 +41,9 @@ const {
             icon="i-lucide-arrow-left"
             size="xl"
             @click="undoTurn"
-            >Revenir au tour précédent</UButton
           >
+            Revenir au tour précédent
+          </UButton>
           <div class="grow" />
           <UButton
             color="error"
@@ -74,16 +51,18 @@ const {
             icon="i-lucide-undo"
             size="xl"
             @click="undoThrow"
-            >Annuler</UButton
           >
+            Annuler
+          </UButton>
           <UButton
             color="success"
             :disabled="!waitingForConfirmation"
             trailing-icon="i-lucide-check"
             size="xl"
             @click="confirmThrows"
-            >Confirmer</UButton
           >
+            Confirmer
+          </UButton>
         </div>
 
         <DartBoard
@@ -92,7 +71,8 @@ const {
           class="max-h-[70vh] w-full"
           @hit="recordThrow"
         />
-        <div class="grid grid-cols-3 text-6xl font-medium">
+
+        <div class="grid grid-cols-3 text-5xl font-medium">
           <div v-for="i in 3" :key="i" class="p-6 text-center">
             <span v-if="currentThrows[i - 1]" class="font-bold">
               {{ currentThrows[i - 1]?.dartThrow.label }}
@@ -101,23 +81,29 @@ const {
               v-else-if="winningCombination?.throws[i - 1]"
               class="italic opacity-50"
             >
-              {{ winningCombination.throws[i - 1].label }}
+              {{
+                winningCombination.throws[i - 1].id === "OUT"
+                  ? "·"
+                  : winningCombination.throws[i - 1].label
+              }}
             </span>
             <span v-else>·</span>
           </div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-24 h-full">
-        <div class="text-6xl font-bold px-6 text-center">
+      <div class="flex flex-col gap-4 h-full">
+        <div class="text-4xl font-bold px-4 text-center">
           Tour {{ gameState.round }}
         </div>
         <div
           v-for="(player, i) in gameState.players"
           :key="i"
-          class="flex gap-3 text-5xl font-bold px-6"
+          class="px-4 py-2 rounded-lg flex gap-3 text-4xl font-bold border border-accented"
           :class="{
-            'opacity-40 italic font-medium': gameState.currentPlayerIndex !== i,
+            'border bg-primary/10 border-primary/25 ':
+              gameState.currentPlayerIndex === i,
+            'opacity-60 italic font-medium': gameState.currentPlayerIndex !== i,
           }"
         >
           {{ player.name }}
@@ -131,8 +117,8 @@ const {
               "
               :class="
                 currentThrowsScore > player.score
-                  ? 'text-red-500'
-                  : 'text-gray-400'
+                  ? 'text-error-500'
+                  : 'opacity-50'
               "
             >
               - {{ currentThrowsScore }}

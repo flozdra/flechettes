@@ -5,7 +5,7 @@ import {
   type Coordinates,
   type DartThrow,
   type DartThrowRecord,
-} from "~/components/dart";
+} from "~/components/Dart";
 
 const props = defineProps<{
   disabled?: boolean;

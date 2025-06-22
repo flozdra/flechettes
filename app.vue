@@ -1,17 +1,17 @@
-<script setup lang="ts">
-import ColorModeButton from "~/components/ui/ColorModeButton.vue";
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <UApp>
     <div class="h-screen">
-      <header class="h-12 border-b flex items-center p-3">
-        <NuxtLink to="/" class="inline-flex gap-1.5 text-xl items-center">
+      <header class="h-16 border-b flex items-center p-3">
+        <NuxtLink to="/" class="inline-flex gap-2 text-2xl items-center">
           <UIcon name="i-lucide-target" />
           <span class="font-extrabold">Fléchettes</span>
         </NuxtLink>
         <div class="grow" />
-        <ColorModeButton />
+        <AppColorModeButton />
+        <AppShortcutsHelp />
+        <AppSettings />
       </header>
 
       <main class="p-3">

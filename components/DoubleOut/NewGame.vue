@@ -1,15 +1,10 @@
 <script lang="ts" setup>
 import { useLocalStorage } from "@vueuse/core";
 
-const knownPlayers = useLocalStorage("knownPlayers", [
-  "Charles",
-  "Florian",
-  "Fred",
-  "Rayan",
-  "Nathaëlle",
-]);
+const knownPlayers = useLocalStorage<string[]>("known-players", []);
 
 const players = ref<string[]>(["", "", "", ""]);
+const score = ref<301 | 501>(301);
 
 const options = computed(() => {
   return knownPlayers.value.filter((p) => !players.value.includes(p));
@@ -22,24 +17,37 @@ function onCreate(item: string, index: number) {
   knownPlayers.value.push(newPlayerName);
   players.value[index] = newPlayerName;
 }
+
 const validPlayers = computed(() => {
   return players.value.filter((p) => p.trim() !== "");
 });
-function new301Game() {
-  const gameId = createNew301(validPlayers.value);
-  navigateTo(`/${gameId}`);
+
+function createNewGame() {
+  const gameId = createNewDoubleOut(score.value, validPlayers.value);
+  navigateTo(`/double-out/${gameId}`);
 }
 </script>
 
 <template>
   <UModal
-    title="Nouvelle partie de 301"
-    description="Objectif : atteindre 0 points en partant de 301."
+    title="Nouvelle partie de Double Out"
+    description="Objectif : atteindre 0 points en partant de 301 ou 501 points."
   >
     <UButton block size="xl">Nouvelle partie</UButton>
 
     <template #body>
       <div class="space-y-3">
+        <URadioGroup
+          v-model="score"
+          orientation="horizontal"
+          variant="table"
+          :items="[
+            { label: '301', value: 301 },
+            { label: '501', value: 501 },
+          ]"
+          :ui="{ item: 'grow text-center text-lg py-2 items-center' }"
+        />
+
         <div v-for="(_, i) in players" :key="i" class="flex gap-1.5">
           <USelectMenu
             v-model="players[i]"
@@ -62,14 +70,14 @@ function new301Game() {
           variant="ghost"
           block
           @click="players.push('')"
-          >Ajouter un joueur</UButton
         >
+          Ajouter un joueur
+        </UButton>
         <UButton
           icon="i-lucide-plus"
           block
-          class="float-right"
           :disabled="validPlayers.length < 1"
-          @click="new301Game"
+          @click="createNewGame"
         >
           Nouvelle partie
         </UButton>
