@@ -5,7 +5,7 @@
     <div class="h-screen">
       <header class="h-16 border-b flex items-center p-3">
         <NuxtLink to="/" class="inline-flex gap-2 text-2xl items-center">
-          <UIcon name="i-lucide-target" />
+          <UIcon name="i-lucide-goal" class="text-3xl" />
           <span class="font-extrabold">Fléchettes</span>
         </NuxtLink>
         <div class="grow" />

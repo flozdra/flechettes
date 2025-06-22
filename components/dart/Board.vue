@@ -1,12 +1,4 @@
 <script lang="ts" setup>
-import {
-  Colors,
-  DartThrows,
-  type Coordinates,
-  type DartThrow,
-  type DartThrowRecord,
-} from "~/components/Dart";
-
 const props = defineProps<{
   disabled?: boolean;
   hits: DartThrowRecord[];

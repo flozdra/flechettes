@@ -1,10 +1,5 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useSound } from "@vueuse/sound";
-import {
-  DartThrows,
-  type DartThrow,
-  type DartThrowRecord,
-} from "~/components/Dart";
 import failTrumpetMp3 from "assets/sounds/fail-trumpet.mp3";
 import superHitMp3 from "assets/sounds/super-hit.mp3";
 import hitDartMp3 from "assets/sounds/hit-dart.mp3";
