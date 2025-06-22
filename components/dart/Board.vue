@@ -5,7 +5,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  hit: [dartThrow: DartThrow, coordinates: Coordinates];
+  hit: [dartThrow: DartThrow, coordinates: ThrowCoordinates];
 }>();
 
 /**
@@ -42,7 +42,7 @@ function drawHitMarker(dartThrowRecord: DartThrowRecord) {
 
   const color = dartThrowRecord.dartThrow.color;
   // Override the color if it's beige or black
-  const strokeColor = [Colors.Beige, Colors.Black].includes(color)
+  const strokeColor = [DartColors.Beige, DartColors.Black].includes(color)
     ? "#494E51"
     : color;
 
@@ -84,7 +84,7 @@ watch(
 function getAttributes(dartThrow: DartThrow) {
   return {
     fill: dartThrow.color,
-    stroke: Colors.Gray,
+    stroke: DartColors.Gray,
     "stroke-width": 0.4,
     class: "hover:brightness-90 cursor-crosshair",
     onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
