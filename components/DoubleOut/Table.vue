@@ -24,9 +24,18 @@ function formatDate(createdAt: number) {
   });
 }
 
+function deleteGame(gameId: string) {
+  if (confirm("Êtes-vous sûr de vouloir supprimer cette partie ?")) {
+    localStorage.removeItem(gameId);
+    games.value = games.value.filter((game) => game.id !== gameId);
+  }
+}
+
+/**
+ * Pagination
+ */
 const page = ref(1);
 const perPage = 10;
-
 const rows = computed(() => {
   return games.value.slice((page.value - 1) * perPage, page.value * perPage);
 });
@@ -37,11 +46,12 @@ const rows = computed(() => {
     <UTable
       :data="rows"
       :columns="[
-        { accessorKey: 'score', header: 'Score' },
+        { accessorKey: 'score', header: 'Type' },
         { accessorKey: 'players', header: 'Joueurs' },
         { accessorKey: 'round', header: 'Round' },
         { accessorKey: 'winnerIndex', header: 'Gagnant' },
         { accessorKey: 'createdAt', header: 'Créé le' },
+        { id: 'actions' },
       ]"
       @select="(row) => navigateTo('/double-out/' + row.original.id)"
     >
@@ -78,6 +88,26 @@ const rows = computed(() => {
               : "-"
           }}
         </span>
+      </template>
+      <template #actions-cell="{ cell }">
+        <div class="text-right">
+          <UDropdownMenu
+            :content="{ align: 'end' }"
+            :items="[
+              {
+                label: 'Supprimer',
+                onSelect: () => deleteGame(cell.row.original.id),
+              },
+            ]"
+          >
+            <UButton
+              icon="i-lucide-ellipsis-vertical"
+              color="neutral"
+              variant="ghost"
+              class="ml-auto"
+            />
+          </UDropdownMenu>
+        </div>
       </template>
     </UTable>
 

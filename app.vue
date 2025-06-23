@@ -1,9 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { fr } from "@nuxt/ui/locale";
+</script>
 
 <template>
-  <UApp>
+  <UApp :locale="fr">
     <div class="h-screen">
-      <header class="h-16 border-b flex items-center p-3">
+      <header class="border-b flex items-center p-3">
         <NuxtLink to="/" class="inline-flex gap-2 text-2xl items-center">
           <UIcon name="i-lucide-goal" class="text-3xl" />
           <span class="font-extrabold">Fléchettes</span>

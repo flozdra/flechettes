@@ -1,8 +1,4 @@
 import { useLocalStorage } from "@vueuse/core";
-import { useSound } from "@vueuse/sound";
-import failTrumpetMp3 from "assets/sounds/fail-trumpet.mp3";
-import superHitMp3 from "assets/sounds/super-hit.mp3";
-import hitDartMp3 from "assets/sounds/hit-dart.mp3";
 
 type Combination = { total: number; throws: DartThrow[] };
 
@@ -56,9 +52,7 @@ export function createNewDoubleOut(score: 301 | 501, playerName: string[]) {
  * Return the logic of a Double Out game.
  */
 export function useDoubleOut(gameId: string) {
-  const failSound = useSound(failTrumpetMp3);
-  const hitDartSound = useSound(hitDartMp3);
-  const superHitSound = useSound(superHitMp3);
+  const soundEffects = useSoundEffects();
 
   const gameState = useLocalStorage<DoubleOutGame>(
     gameId,
@@ -107,10 +101,14 @@ export function useDoubleOut(gameId: string) {
       coordinates,
     });
 
-    if (dartThrow.score >= 18) {
-      superHitSound.play();
+    if (dartThrow.id === "OUT") {
+      soundEffects.fart.play();
+    } else if (dartThrow.id === "DB") {
+      soundEffects.sniper.play();
+    } else if (dartThrow.score >= 18) {
+      soundEffects.rifle.play();
     } else {
-      hitDartSound.play();
+      soundEffects.hitDart.play();
     }
   }
 
@@ -125,7 +123,7 @@ export function useDoubleOut(gameId: string) {
     currentPlayer.score -= currentThrowsScore.value;
 
     if (currentThrowsScore.value < 10) {
-      failSound.play(); // Play fail sound if score is less than 10
+      soundEffects.failSlow.play();
     }
 
     if (currentPlayer.score < 0) {

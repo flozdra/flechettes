@@ -1,7 +1,4 @@
 import { useLocalStorage } from "@vueuse/core";
-import superHitMp3 from "assets/sounds/super-hit.mp3";
-import hitDartMp3 from "assets/sounds/hit-dart.mp3";
-import { useSound } from "@vueuse/sound";
 
 // prettier-ignore
 const CricketNumbersList = ["15", "16", "17", "18", "19", "20", "bull"] as const;
@@ -97,8 +94,7 @@ function mergeTableWithThrows(
  * Return the logic of a Cricket game.
  */
 export function useCricket(gameId: string) {
-  const hitDartSound = useSound(hitDartMp3);
-  const superHitSound = useSound(superHitMp3);
+  const soundEffects = useSoundEffects();
 
   const gameState = useLocalStorage<CricketGame>(gameId, {} as CricketGame, {
     deep: true,
@@ -150,10 +146,14 @@ export function useCricket(gameId: string) {
       coordinates,
     });
 
-    if (dartThrow.score >= 30) {
-      superHitSound.play();
+    if (dartThrow.id === "OUT") {
+      soundEffects.fart.play();
+    } else if (dartThrow.id === "DB") {
+      soundEffects.sniper.play();
+    } else if (dartThrow.score >= 18) {
+      soundEffects.rifle.play();
     } else {
-      hitDartSound.play();
+      soundEffects.hitDart.play();
     }
   }
 

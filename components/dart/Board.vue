@@ -97,7 +97,7 @@ function getAttributes(dartThrow: DartThrow) {
     ref="board"
     viewBox="0 0 420 420"
     fill="none"
-    class="cursor-crosshair"
+    class="cursor-crosshair max-h-[calc(100vh_-_242px)] w-full"
     :class="{ 'opacity-70 pointer-events-none': disabled }"
     xmlns="http://www.w3.org/2000/svg"
     @pointerdown="handleClick($event, DartThrows.OUT)"

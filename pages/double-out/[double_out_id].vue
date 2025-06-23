@@ -68,7 +68,6 @@ defineShortcuts({
         <DartBoard
           :disabled="waitingForConfirmation"
           :hits="currentThrows"
-          class="max-h-[70vh] w-full"
           @hit="recordThrow"
         />
 
