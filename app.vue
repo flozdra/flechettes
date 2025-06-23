@@ -8,11 +8,11 @@ useSeoMeta({
   ogUrl: "https://flechettes.flozdra.dev/",
   description: "Record your dart throws from anywhere.",
   ogDescription: "Record your dart throws from anywhere.",
-  ogImage: "/og-image.png",
+  ogImage: "https://flechettes.flozdra.dev/og-image.png",
   twitterCard: "summary_large_image",
   twitterTitle: "Fléchettes",
   twitterDescription: "Record your dart throws from anywhere.",
-  twitterImage: "/og-image.png",
+  twitterImage: "https://flechettes.flozdra.dev/og-image.png",
 });
 </script>
 
