@@ -1,19 +1,5 @@
 <script setup lang="ts">
 import { fr } from "@nuxt/ui/locale";
-
-useSeoMeta({
-  title: "Fléchettes",
-  ogTitle: "Fléchettes",
-  ogType: "website",
-  ogUrl: "https://flechettes.flozdra.dev/",
-  description: "Record your dart throws from anywhere.",
-  ogDescription: "Record your dart throws from anywhere.",
-  ogImage: "https://flechettes.flozdra.dev/og-image.png",
-  twitterCard: "summary_large_image",
-  twitterTitle: "Fléchettes",
-  twitterDescription: "Record your dart throws from anywhere.",
-  twitterImage: "https://flechettes.flozdra.dev/og-image.png",
-});
 </script>
 
 <template>
