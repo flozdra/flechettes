@@ -57,7 +57,7 @@ defineShortcuts({
             :disabled="!waitingForConfirmation"
             trailing-icon="i-lucide-check"
             size="xl"
-            @click="confirmThrows"
+            @click="confirmThrows()"
           >
             Confirmer
           </UButton>
@@ -69,8 +69,8 @@ defineShortcuts({
           @hit="recordThrow"
         />
 
-        <div class="grid grid-cols-3 text-6xl font-medium">
-          <div v-for="i in 3" :key="i" class="p-6 text-center">
+        <div class="grid grid-cols-3 text-5xl whitespace-nowrap">
+          <div v-for="i in 3" :key="i" class="py-3 text-center">
             <span v-if="currentThrows[i - 1]" class="font-bold">
               {{ currentThrows[i - 1]?.dartThrow.label }}
             </span>

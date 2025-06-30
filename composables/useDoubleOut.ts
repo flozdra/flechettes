@@ -105,7 +105,7 @@ export function useDoubleOut(gameId: string) {
       soundEffects.fart.play();
     } else if (dartThrow.id === "DB") {
       soundEffects.sniper.play();
-    } else if (dartThrow.score >= 18) {
+    } else if (dartThrow.score >= 15) {
       soundEffects.rifle.play();
     } else {
       soundEffects.hitDart.play();
