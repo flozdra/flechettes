@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import { useSound } from "@vueuse/sound";
 import confetti from "canvas-confetti";
-import orchestralWinMp3 from "assets/sounds/orchestral-win.mp3";
 
 interface Props {
   winner: { name: string } | null;
@@ -10,7 +8,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{ undoTurn: [] }>();
 
-const orchestralWinSound = useSound(orchestralWinMp3);
+const soundEffects = useSoundEffects();
 
 function fire(particleRatio: number, opts: confetti.Options) {
   confetti({
@@ -24,7 +22,7 @@ const isPlaying = ref(false);
 function triggerConfetti() {
   if (props.winner === null || isPlaying.value) return;
   isPlaying.value = true;
-  orchestralWinSound.play();
+  soundEffects.orchestralWin.play();
 
   fire(0.25, { spread: 26, startVelocity: 55 });
   fire(0.2, { spread: 60 });

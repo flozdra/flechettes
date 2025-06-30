@@ -2,12 +2,19 @@
 import { useLocalStorage } from "@vueuse/core";
 
 const knownPlayers = useLocalStorage<string[]>("known-players", []);
+
+const shortcuts = [
+  { key: "Esc", action: "Revenir au tour précédent" },
+  { key: "⌫", action: "Annuler la dernière flèche" },
+  { key: "Entrée", action: "Confirmer les flèches" },
+  { key: "0 – 9", action: "SoundBoard" },
+];
 </script>
 
 <template>
   <UModal
     title="Paramètres"
-    description="Gérer les joueurs enregistrés dans l'application"
+    description="Gérer les raccourcis clavier et les joueurs enregistrés."
   >
     <UButton
       icon="i-lucide-settings"
@@ -16,7 +23,19 @@ const knownPlayers = useLocalStorage<string[]>("known-players", []);
       size="xl"
     />
     <template #body>
-      <div class="space-y-3">
+      <div class="space-y-6 text-sm">
+        <div>
+          <p class="font-semibold text-highlighted mb-3">Raccourcis clavier</p>
+          <div class="grid grid-cols-2 gap-2">
+            <template v-for="shortcut in shortcuts" :key="shortcut.key">
+              <div class="flex items-center gap-1.5">
+                <UKbd class="min-w-12">{{ shortcut.key }}</UKbd>
+                <span class="text-xs">{{ shortcut.action }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <UTable
           :data="knownPlayers"
           :columns="[
@@ -24,7 +43,7 @@ const knownPlayers = useLocalStorage<string[]>("known-players", []);
             { id: 'actions' },
           ]"
           class="max-h-[360px]"
-          :ui="{ th: 'p-2', td: 'p-2' }"
+          :ui="{ th: 'px-0 py-1', td: 'px-0 py-1' }"
           sticky
         >
           <template #name-cell="{ cell }">{{ cell.row.original }}</template>

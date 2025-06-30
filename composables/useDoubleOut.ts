@@ -122,10 +122,6 @@ export function useDoubleOut(gameId: string) {
     currentPlayer.throws[roundIndex] = [...currentThrows.value];
     currentPlayer.score -= currentThrowsScore.value;
 
-    if (currentThrowsScore.value < 10) {
-      soundEffects.failSlow.play();
-    }
-
     if (currentPlayer.score < 0) {
       currentPlayer.score += currentThrowsScore.value; // Revert score if it goes below zero
     }

@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       meta: [
         {
           name: "description",
-          content: "Record your dart throws from anywhere.",
+          content: "Record your dart games from anywhere.",
         },
         {
           name: "keywords",
@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         { property: "og:url", content: "https://flechettes.flozdra.dev/" },
         {
           property: "og:description",
-          content: "Record your dart throws from anywhere.",
+          content: "Record your dart games from anywhere.",
         },
         {
           property: "og:image",
@@ -29,7 +29,7 @@ export default defineNuxtConfig({
         { name: "twitter:title", content: "Fléchettes" },
         {
           name: "twitter:description",
-          content: "Record your dart throws from anywhere.",
+          content: "Record your dart games from anywhere.",
         },
         {
           name: "twitter:image",
