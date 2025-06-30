@@ -52,6 +52,7 @@ export function createNewDoubleOut(score: 301 | 501, playerName: string[]) {
  * Return the logic of a Double Out game.
  */
 export function useDoubleOut(gameId: string) {
+  const settings = useSettings();
   const soundEffects = useSoundEffects();
 
   const gameState = useLocalStorage<DoubleOutGame>(
@@ -110,11 +111,13 @@ export function useDoubleOut(gameId: string) {
     } else {
       soundEffects.hitDart.play();
     }
+
+    if (settings.value.autoConfirmThrows && waitingForConfirmation.value) {
+      confirmThrows();
+    }
   }
 
-  function confirmThrows(bypassConfirmation = false) {
-    if (!waitingForConfirmation.value && !bypassConfirmation) return;
-
+  function confirmThrows() {
     const currentPlayer =
       gameState.value.players[gameState.value.currentPlayerIndex];
     const roundIndex = gameState.value.round - 1;

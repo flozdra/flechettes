@@ -94,6 +94,7 @@ function mergeTableWithThrows(
  * Return the logic of a Cricket game.
  */
 export function useCricket(gameId: string) {
+  const settings = useSettings();
   const soundEffects = useSoundEffects();
 
   const gameState = useLocalStorage<CricketGame>(gameId, {} as CricketGame, {
@@ -155,11 +156,13 @@ export function useCricket(gameId: string) {
     } else {
       soundEffects.hitDart.play();
     }
+
+    if (settings.value.autoConfirmThrows && waitingForConfirmation.value) {
+      confirmThrows();
+    }
   }
 
-  function confirmThrows(bypassConfirmation = false) {
-    if (!waitingForConfirmation.value && !bypassConfirmation) return;
-
+  function confirmThrows() {
     const currentPlayer =
       gameState.value.players[gameState.value.currentPlayerIndex];
     const roundIndex = gameState.value.round - 1;

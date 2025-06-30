@@ -16,7 +16,7 @@ const {
 } = useCricket(route.params.cricket_id as string);
 
 defineShortcuts({
-  enter: () => confirmThrows(true),
+  enter: () => confirmThrows(),
   backspace: () => undoThrow(),
   escape: () => undoTurn(),
 });
@@ -54,10 +54,9 @@ defineShortcuts({
           </UButton>
           <UButton
             color="success"
-            :disabled="!waitingForConfirmation"
             trailing-icon="i-lucide-check"
             size="xl"
-            @click="confirmThrows()"
+            @click="confirmThrows"
           >
             Confirmer
           </UButton>
@@ -80,9 +79,7 @@ defineShortcuts({
       </div>
 
       <div class="flex flex-col gap-4 h-full">
-        <div class="text-4xl font-bold px-4 text-center">
-          Tour {{ gameState.round }}
-        </div>
+        <DartRound :round="gameState.round" />
         <div
           v-for="(player, i) in gameState.players"
           :key="i"

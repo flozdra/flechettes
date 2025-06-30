@@ -2,6 +2,7 @@
 import { useLocalStorage } from "@vueuse/core";
 
 const knownPlayers = useLocalStorage<string[]>("known-players", []);
+const settings = useSettings();
 
 const shortcuts = [
   { key: "Esc", action: "Revenir au tour précédent" },
@@ -14,7 +15,7 @@ const shortcuts = [
 <template>
   <UModal
     title="Paramètres"
-    description="Gérer les raccourcis clavier et les joueurs enregistrés."
+    description="Gérer les paramètres de l'application."
   >
     <UButton
       icon="i-lucide-settings"
@@ -25,14 +26,12 @@ const shortcuts = [
     <template #body>
       <div class="space-y-6 text-sm">
         <div>
-          <p class="font-semibold text-highlighted mb-3">Raccourcis clavier</p>
-          <div class="grid grid-cols-2 gap-2">
-            <template v-for="shortcut in shortcuts" :key="shortcut.key">
-              <div class="flex items-center gap-1.5">
-                <UKbd class="min-w-12">{{ shortcut.key }}</UKbd>
-                <span class="text-xs">{{ shortcut.action }}</span>
-              </div>
-            </template>
+          <p class="font-semibold text-highlighted mb-3">Préférences</p>
+          <div class="space-y-2-2">
+            <USwitch
+              v-model="settings.autoConfirmThrows"
+              label="Confirmation automatique des lancés"
+            />
           </div>
         </div>
 
@@ -72,6 +71,18 @@ const shortcuts = [
             </div>
           </template>
         </UTable>
+
+        <div>
+          <p class="font-semibold text-highlighted mb-3">Raccourcis clavier</p>
+          <div class="grid grid-cols-2 gap-2">
+            <template v-for="shortcut in shortcuts" :key="shortcut.key">
+              <div class="flex items-center gap-1.5">
+                <UKbd class="min-w-12">{{ shortcut.key }}</UKbd>
+                <span class="text-xs">{{ shortcut.action }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
     </template>
   </UModal>
