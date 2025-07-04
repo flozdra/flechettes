@@ -121,18 +121,17 @@ defineShortcuts({
             <span>{{ player.name }}</span>
             <span>{{ player.score }}</span>
           </div>
-          <div
-            v-if="player.throws[gameState.round - 2]"
-            class="flex items-center text-sm font-normal"
-          >
+          <div class="flex items-center text-sm font-normal">
             Derniers lancés :
             <div class="grow" />
-            <span v-for="(t, j) in player.throws[gameState.round - 2]" :key="j">
+            <span
+              v-for="(t, j) in player.throws[player.throws.length - 1] ?? []"
+              :key="j"
+            >
               {{ t.dartThrow.label }}
               <span class="mx-1">{{ j < 2 ? " · " : "" }}</span>
             </span>
           </div>
-          <div v-else class="text-sm">‎</div>
         </div>
       </div>
     </div>
