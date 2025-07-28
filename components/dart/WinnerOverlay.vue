@@ -2,6 +2,7 @@
 import confetti from "canvas-confetti";
 
 interface Props {
+  to: string;
   winner: { name: string } | null;
   rankings: { name: string }[];
 }
@@ -85,7 +86,7 @@ defineShortcuts({
     </div>
 
     <div class="mt-6 text-center">
-      <UButton color="primary" icon="i-lucide-home" size="xl" to="/">
+      <UButton color="primary" icon="i-lucide-home" size="xl" :to="to">
         Retour au menu
       </UButton>
     </div>

@@ -27,6 +27,7 @@ defineShortcuts({
 <template>
   <div>
     <DartWinnerOverlay
+      to="/"
       :winner="winner"
       :rankings="rankings"
       @undo-turn="undoTurn"
