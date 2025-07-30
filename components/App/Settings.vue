@@ -27,10 +27,14 @@ const shortcuts = [
       <div class="space-y-6 text-sm">
         <div>
           <p class="font-semibold text-highlighted mb-3">Préférences</p>
-          <div class="space-y-2-2">
+          <div class="space-y-3">
             <USwitch
               v-model="settings.autoConfirmThrows"
               label="Confirmation automatique des lancés"
+            />
+            <USwitch
+              v-model="settings.highlightNumbers"
+              label="Mise en surbrillance des numéros"
             />
           </div>
         </div>

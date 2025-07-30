@@ -9,6 +9,8 @@ const emit = defineEmits<{
   hit: [dartThrow: DartThrow, coordinates: ThrowCoordinates];
 }>();
 
+const settings = useSettings();
+
 /**
  * Handle the dartboard events
  */
@@ -84,15 +86,18 @@ watch(
  */
 function getAttributes(dartThrow: DartThrow) {
   let highlightClass: string = "";
-  if (props.highlights?.length && dartThrow.id !== "OUT") {
-    highlightClass = props.highlights.includes(dartThrow.id)
-      ? ""
-      : "opacity-50";
+  const isHighlighted =
+    settings.value.highlightNumbers &&
+    props.highlights?.includes(dartThrow.id) &&
+    dartThrow.id !== "OUT";
+  if (settings.value.highlightNumbers && props.highlights?.length) {
+    highlightClass = isHighlighted ? "" : "opacity-50";
   }
+
   return {
     fill: dartThrow.color,
-    stroke: DartColors.Gray,
-    "stroke-width": 0.4,
+    stroke: isHighlighted ? DartColors.Beige : DartColors.Gray,
+    "stroke-width": isHighlighted ? 0.8 : 0.4,
     class: "hover:brightness-90 cursor-crosshair " + highlightClass,
     onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
   };
