@@ -2,6 +2,7 @@
 const props = defineProps<{
   disabled?: boolean;
   hits: DartThrowRecord[];
+  highlights?: DartThrowId[];
 }>();
 
 const emit = defineEmits<{
@@ -82,11 +83,17 @@ watch(
  * Define the attributes for each segment of the dartboard
  */
 function getAttributes(dartThrow: DartThrow) {
+  let highlightClass: string = "";
+  if (props.highlights?.length && dartThrow.id !== "OUT") {
+    highlightClass = props.highlights.includes(dartThrow.id)
+      ? ""
+      : "opacity-50";
+  }
   return {
     fill: dartThrow.color,
     stroke: DartColors.Gray,
     "stroke-width": 0.4,
-    class: "hover:brightness-90 cursor-crosshair",
+    class: "hover:brightness-90 cursor-crosshair " + highlightClass,
     onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
   };
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { CricketScoreTable } from "#components";
+
 const route = useRoute();
 
 const {
@@ -12,6 +14,8 @@ const {
   waitingForConfirmation,
   confirmThrows,
   currentThrows,
+  currentPlayerFutureTable,
+  currentPlayerHighlights,
   recordThrow,
 } = useCricket(route.params.cricket_id as string);
 
@@ -66,6 +70,7 @@ defineShortcuts({
         <DartBoard
           :disabled="waitingForConfirmation"
           :hits="currentThrows"
+          :highlights="currentPlayerHighlights"
           @hit="recordThrow"
         />
 
@@ -92,22 +97,13 @@ defineShortcuts({
           }"
         >
           <div class="text-3xl font-bold">{{ player.name }}</div>
-          <div class="grid grid-cols-7 rounded-lg text-lg font-bold">
-            <span>20</span>
-            <span>19</span>
-            <span>18</span>
-            <span>17</span>
-            <span>16</span>
-            <span>15</span>
-            <span>Bull</span>
-            <CricketScoreIcon :score="player.table[20]" />
-            <CricketScoreIcon :score="player.table[19]" />
-            <CricketScoreIcon :score="player.table[18]" />
-            <CricketScoreIcon :score="player.table[17]" />
-            <CricketScoreIcon :score="player.table[16]" />
-            <CricketScoreIcon :score="player.table[15]" />
-            <CricketScoreIcon :score="player.table.bull" />
-          </div>
+          <CricketScoreTable
+            :table="
+              gameState.currentPlayerIndex === i
+                ? currentPlayerFutureTable
+                : player.table
+            "
+          />
         </div>
       </div>
     </div>

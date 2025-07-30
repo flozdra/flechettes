@@ -3,7 +3,7 @@ import { useLocalStorage } from "@vueuse/core";
 // prettier-ignore
 const CricketNumbersList = ["15", "16", "17", "18", "19", "20", "bull"] as const;
 type CricketNumbers = (typeof CricketNumbersList)[number];
-type CricketTable = Record<CricketNumbers, number>;
+export type CricketTable = Record<CricketNumbers, number>;
 
 export type CricketGame = {
   id: string;
@@ -114,6 +114,22 @@ export function useCricket(gameId: string) {
     const currentPlayerTable =
       gameState.value.players[gameState.value.currentPlayerIndex].table;
     return mergeTableWithThrows(currentPlayerTable, currentThrows.value);
+  });
+
+  /**
+   * Current player remaining throws.
+   */
+  const currentPlayerHighlights = computed(() => {
+    const numbers = CricketNumbersList.filter(
+      (key) => currentPlayerFutureTable.value[key] < 3
+    );
+    return numbers
+      .map<DartThrowId[]>((key) => {
+        return key === "bull"
+          ? ["SB", "DB"]
+          : [`S${key}`, `D${key}`, `T${key}`];
+      })
+      .flat();
   });
 
   const winner = computed(() =>
@@ -243,6 +259,8 @@ export function useCricket(gameId: string) {
     gameState,
     rankings,
     currentThrows,
+    currentPlayerHighlights,
+    currentPlayerFutureTable,
     waitingForConfirmation,
     winner,
     recordThrow,
