@@ -82,9 +82,7 @@ const rows = computed(() => {
           {{
             (cell.getValue() as number) !== null
               ? "🏆 " +
-                (games[cell.row.index].players as DoubleOutGame["players"])[
-                  cell.getValue() as number
-                ].name
+                cell.row.original.players[cell.getValue() as number].name
               : "-"
           }}
         </span>
