@@ -33,6 +33,13 @@ export function createNewCricket(playerName: string[]) {
   return gameId;
 }
 
+// Players sorted by score
+export function getRemainingThrows(table: CricketTable) {
+  return CricketNumbersList.reduce((acc, numberKey) => {
+    return acc + Math.max(3 - table[numberKey], 0);
+  }, 0);
+}
+
 function isTableComplete(table: CricketTable) {
   return CricketNumbersList.every((numberKey) => table[numberKey] >= 3);
 }
@@ -243,12 +250,6 @@ export function useCricket(gameId: string) {
     );
   }
 
-  // Players sorted by score
-  function getRemainingThrows(table: CricketTable) {
-    return CricketNumbersList.reduce((acc, numberKey) => {
-      return acc + Math.max(3 - table[numberKey], 0);
-    }, 0);
-  }
   const rankings = computed(() =>
     gameState.value.players.toSorted(
       (p1, p2) => getRemainingThrows(p1.table) - getRemainingThrows(p2.table)

@@ -92,25 +92,17 @@ function revenge() {
 
       <div class="flex flex-col gap-4 h-full">
         <DartRound :round="gameState.round" />
-        <div
+        <CricketScoreTable
           v-for="(player, i) in gameState.players"
           :key="i"
-          class="px-2 pt-2 pb-4 rounded-lg space-y-3 text-center border border-accented"
-          :class="{
-            'border bg-primary/10 border-primary/25 ':
-              gameState.currentPlayerIndex === i,
-            'opacity-60 italic font-medium': gameState.currentPlayerIndex !== i,
-          }"
-        >
-          <div class="text-3xl font-bold">{{ player.name }}</div>
-          <CricketScoreTable
-            :table="
-              gameState.currentPlayerIndex === i
-                ? currentPlayerFutureTable
-                : player.table
-            "
-          />
-        </div>
+          :player-name="player.name"
+          :active="gameState.currentPlayerIndex === i"
+          :table="
+            gameState.currentPlayerIndex === i
+              ? currentPlayerFutureTable
+              : player.table
+          "
+        />
       </div>
     </div>
   </div>

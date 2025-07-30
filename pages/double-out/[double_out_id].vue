@@ -122,7 +122,7 @@ function revenge() {
         <div
           v-for="(player, i) in gameState.players"
           :key="i"
-          class="px-4 py-2 rounded-lg text-4xl font-bold border border-accented"
+          class="px-4 py-2 rounded-lg text-4xl font-bold border border-accented space-y-1.5"
           :class="{
             'border bg-primary/10 border-primary/25 ':
               gameState.currentPlayerIndex === i,
@@ -133,6 +133,11 @@ function revenge() {
             <span>{{ player.name }}</span>
             <span>{{ player.score }}</span>
           </div>
+          <UProgress
+            :model-value="gameState.score - player.score"
+            :max="gameState.score"
+            color="primary"
+          />
           <div class="flex items-center text-sm font-normal">
             Derniers lancés :
             <div class="grow" />
