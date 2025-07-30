@@ -147,14 +147,10 @@ export function useCricket(gameId: string) {
       coordinates,
     });
 
-    if (dartThrow.id === "OUT") {
-      soundEffects.fart.play();
-    } else if (dartThrow.id === "DB") {
+    if (dartThrow.id === "DB") {
       soundEffects.sniper.play();
-    } else if (dartThrow.score >= 18) {
+    } else if (dartThrow.score >= 15) {
       soundEffects.rifle.play();
-    } else {
-      soundEffects.hitDart.play();
     }
 
     if (settings.value.autoConfirmThrows && waitingForConfirmation.value) {
