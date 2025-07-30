@@ -13,6 +13,7 @@ const {
   confirmThrows,
   currentThrows,
   currentThrowsScore,
+  currentPlayerHighlights,
   winningCombination,
   recordThrow,
 } = useDoubleOut(route.params.double_out_id as string);
@@ -68,6 +69,7 @@ defineShortcuts({
         <DartBoard
           :disabled="waitingForConfirmation"
           :hits="currentThrows"
+          :highlights="currentPlayerHighlights"
           @hit="recordThrow"
         />
 

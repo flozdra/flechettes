@@ -177,6 +177,13 @@ export function useDoubleOut(gameId: string) {
     return possibleThrows[0] ?? null;
   });
 
+  const currentPlayerHighlights = computed(() => {
+    if (winningCombination.value === null) {
+      return [];
+    }
+    return winningCombination.value.throws.map((dartThrow) => dartThrow.id);
+  });
+
   const canUndoThrow = computed(() => {
     return currentThrows.value.length > 0;
   });
@@ -229,6 +236,7 @@ export function useDoubleOut(gameId: string) {
     rankings,
     currentThrows,
     currentThrowsScore,
+    currentPlayerHighlights,
     waitingForConfirmation,
     winner,
     winningCombination,
