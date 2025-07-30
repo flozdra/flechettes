@@ -23,6 +23,14 @@ defineShortcuts({
   backspace: () => undoThrow(),
   escape: () => undoTurn(),
 });
+
+function revenge() {
+  const gameId = createNewDoubleOut(
+    gameState.value.score,
+    gameState.value.players.map((p) => p.name)
+  );
+  navigateTo(`/double-out/${gameId}`);
+}
 </script>
 
 <template>
@@ -31,6 +39,7 @@ defineShortcuts({
       to="/"
       :winner="winner"
       :rankings="rankings"
+      @revenge="revenge"
       @undo-turn="undoTurn"
     />
 

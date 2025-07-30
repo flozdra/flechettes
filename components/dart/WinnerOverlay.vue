@@ -7,7 +7,7 @@ interface Props {
   rankings: { name: string }[];
 }
 const props = defineProps<Props>();
-const emit = defineEmits<{ undoTurn: [] }>();
+const emit = defineEmits<{ undoTurn: []; revenge: [] }>();
 
 const soundEffects = useSoundEffects();
 
@@ -85,8 +85,22 @@ defineShortcuts({
       </div>
     </div>
 
-    <div class="mt-6 text-center">
-      <UButton color="primary" icon="i-lucide-home" size="xl" :to="to">
+    <div class="mt-6 flex flex-col gap-3 items-center text-center">
+      <UButton
+        color="primary"
+        icon="i-lucide-rotate-ccw"
+        size="xl"
+        @click="emit('revenge')"
+      >
+        Revanche
+      </UButton>
+      <UButton
+        color="primary"
+        variant="subtle"
+        icon="i-lucide-home"
+        size="xl"
+        :to="to"
+      >
         Retour au menu
       </UButton>
     </div>

@@ -24,6 +24,11 @@ defineShortcuts({
   backspace: () => undoThrow(),
   escape: () => undoTurn(),
 });
+
+function revenge() {
+  const gameId = createNewCricket(gameState.value.players.map((p) => p.name));
+  navigateTo(`/cricket/${gameId}`);
+}
 </script>
 
 <template>
@@ -32,6 +37,7 @@ defineShortcuts({
       to="/?tab=1"
       :winner="winner"
       :rankings="rankings"
+      @revenge="revenge"
       @undo-turn="undoTurn"
     />
 
