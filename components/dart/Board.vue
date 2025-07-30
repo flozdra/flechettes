@@ -85,20 +85,28 @@ watch(
  * Define the attributes for each segment of the dartboard
  */
 function getAttributes(dartThrow: DartThrow) {
-  let highlightClass: string = "";
-  const isHighlighted =
-    settings.value.highlightNumbers &&
-    props.highlights?.includes(dartThrow.id) &&
-    dartThrow.id !== "OUT";
-  if (settings.value.highlightNumbers && props.highlights?.length) {
-    highlightClass = isHighlighted ? "" : "opacity-50";
+  const highlightEnabled =
+    settings.value.highlightNumbers && props.highlights?.length;
+
+  if (highlightEnabled) {
+    const isOut = dartThrow.id === "OUT";
+    const isHighlighted = props.highlights.includes(dartThrow.id) && !isOut;
+    return {
+      fill: dartThrow.color,
+      stroke: isHighlighted ? DartColors.Beige : DartColors.Gray,
+      "stroke-width": isHighlighted ? 0.8 : 0.4,
+      class:
+        "hover:brightness-90 cursor-crosshair " +
+        (!isHighlighted && !isOut ? "opacity-50" : ""),
+      onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
+    };
   }
 
   return {
     fill: dartThrow.color,
-    stroke: isHighlighted ? DartColors.Beige : DartColors.Gray,
-    "stroke-width": isHighlighted ? 0.8 : 0.4,
-    class: "hover:brightness-90 cursor-crosshair " + highlightClass,
+    stroke: DartColors.Gray,
+    "stroke-width": 0.4,
+    class: "hover:brightness-90 cursor-crosshair",
     onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
   };
 }
