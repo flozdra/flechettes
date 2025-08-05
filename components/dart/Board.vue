@@ -10,6 +10,7 @@ const emit = defineEmits<{
 }>();
 
 const settings = useSettings();
+const soundEffects = useSoundEffects();
 
 /**
  * Handle the dartboard events
@@ -35,6 +36,7 @@ function handleClick(evt: MouseEvent, dartThrow: DartThrow) {
   };
 
   emit("hit", dartThrow, coordinates);
+  soundEffects.hitDart.play();
 }
 
 /**
@@ -66,20 +68,22 @@ function drawHitMarker(dartThrowRecord: DartThrowRecord) {
   board.value.appendChild(hitMarker);
 }
 
-watch(
-  () => props.hits,
-  (hits) => {
-    if (!board.value) return;
+onMounted(() => {
+  watch(
+    () => props.hits,
+    (hits) => {
+      if (!board.value) return;
 
-    // Remove all previous markers
-    const markers = board.value.querySelectorAll(".hit-marker");
-    markers.forEach((marker) => marker.remove());
+      // Remove all previous markers
+      const markers = board.value.querySelectorAll(".hit-marker");
+      markers.forEach((marker) => marker.remove());
 
-    // Add new markers
-    hits.forEach(drawHitMarker);
-  },
-  { immediate: true, deep: true }
-);
+      // Add new markers
+      hits.forEach(drawHitMarker);
+    },
+    { immediate: true, deep: true }
+  );
+});
 
 /**
  * Define the attributes for each segment of the dartboard
@@ -97,7 +101,7 @@ function getAttributes(dartThrow: DartThrow) {
       "stroke-width": isHighlighted ? 0.8 : 0.4,
       class:
         "hover:brightness-90 cursor-crosshair " +
-        (!isHighlighted && !isOut ? "opacity-50" : ""),
+        (!isHighlighted && !isOut ? "opacity-30" : ""),
       onPointerdown: (evt: MouseEvent) => handleClick(evt, dartThrow),
     };
   }
@@ -117,7 +121,7 @@ function getAttributes(dartThrow: DartThrow) {
     ref="board"
     viewBox="0 0 420 420"
     fill="none"
-    class="cursor-crosshair max-h-[calc(100vh_-_218px)] w-full"
+    class="cursor-crosshair max-h-[calc(100vh_-_244px)] w-full"
     :class="{ 'opacity-70 pointer-events-none': disabled }"
     xmlns="http://www.w3.org/2000/svg"
     @pointerdown="handleClick($event, DartThrows.OUT)"

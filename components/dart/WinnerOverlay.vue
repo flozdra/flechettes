@@ -61,23 +61,15 @@ defineShortcuts({
 <template>
   <div
     v-if="winner"
-    class="absolute inset-0 z-10 w-full p-12 bg-default/80 backdrop-blur-lg font-bold space-y-12"
+    class="absolute inset-0 z-10 p-12 bg-default/80 space-y-12 backdrop-blur-lg font-bold flex flex-col items-center justify-center"
   >
-    <UButton
-      color="error"
-      icon="i-lucide-arrow-left"
-      size="lg"
-      @click="emit('undoTurn')"
-    >
-      Revenir au tour précédent
-    </UButton>
+    <div class="text-center text-8xl">🏆 {{ winner.name }} a gagné ! 🏆</div>
 
-    <div class="text-center text-8xl mb-12">{{ winner.name }} a gagné ! 🏆</div>
     <div class="text-4xl leading-relaxed mx-auto max-w-sm">
       <div v-for="(player, i) in rankings" :key="i" class="flex">
         <div
-          class="min-w-32 flex items-center justify-center relative"
-          :class="i > 2 && 'text-2xl'"
+          class="min-w-16 flex items-center relative"
+          :class="i > 2 && 'text-3xl ml-2'"
         >
           {{ i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1 }}
         </div>
@@ -85,7 +77,9 @@ defineShortcuts({
       </div>
     </div>
 
-    <div class="mt-6 flex flex-col gap-3 items-center text-center">
+    <div
+      class="flex flex-wrap gap-x-3 gap-y-1.5 items-center justify-center mb-24"
+    >
       <UButton
         color="primary"
         icon="i-lucide-rotate-ccw"
@@ -102,6 +96,15 @@ defineShortcuts({
         :to="to"
       >
         Retour au menu
+      </UButton>
+      <div class="basis-full" />
+      <UButton
+        color="error"
+        icon="i-lucide-undo"
+        size="xl"
+        @click="emit('undoTurn')"
+      >
+        Annuler la dernière flèche
       </UButton>
     </div>
   </div>

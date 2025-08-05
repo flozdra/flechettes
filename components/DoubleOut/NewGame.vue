@@ -23,8 +23,7 @@ const validPlayers = computed(() => {
 });
 
 function createNewGame() {
-  const gameId = createNewDoubleOut(score.value, validPlayers.value);
-  navigateTo(`/double-out/${gameId}`);
+  createNewDoubleOut(score.value, validPlayers.value);
 }
 </script>
 

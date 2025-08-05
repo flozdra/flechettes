@@ -1,34 +1,30 @@
 <script setup lang="ts">
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from "reka-ui";
 import { CricketScoreTable } from "#components";
 
 const route = useRoute();
 
 const {
-  gameState,
-  rankings,
-  winner,
-  canUndoTurn,
-  undoTurn,
-  canUndoThrow,
-  undoThrow,
-  waitingForConfirmation,
-  confirmThrows,
+  state,
+  players,
+  currentPlayer,
+  round,
+  ranking,
   currentThrows,
-  currentPlayerFutureTable,
+  winner,
   currentPlayerHighlights,
   recordThrow,
+  waitingForConfirmation,
+  confirmThrows,
+  canUndo,
+  undo,
+  revenge,
 } = useCricket(route.params.cricket_id as string);
 
 defineShortcuts({
   enter: () => confirmThrows(),
-  backspace: () => undoThrow(),
-  escape: () => undoTurn(),
+  backspace: () => undo(),
 });
-
-function revenge() {
-  const gameId = createNewCricket(gameState.value.players.map((p) => p.name));
-  navigateTo(`/cricket/${gameId}`);
-}
 </script>
 
 <template>
@@ -36,42 +32,24 @@ function revenge() {
     <DartWinnerOverlay
       to="/?tab=1"
       :winner="winner"
-      :rankings="rankings"
+      :rankings="ranking"
       @revenge="revenge"
-      @undo-turn="undoTurn"
+      @undo-turn="undo"
     />
 
-    <div class="grid grid-cols-3">
-      <div class="space-y-3 col-span-2">
-        <div class="flex gap-3">
-          <UButton
-            color="error"
-            :hidden="!canUndoTurn"
-            icon="i-lucide-arrow-left"
-            size="xl"
-            @click="undoTurn"
-          >
-            Revenir au tour précédent
-          </UButton>
-          <div class="grow" />
-          <UButton
-            color="error"
-            :hidden="!canUndoThrow"
-            icon="i-lucide-undo"
-            size="xl"
-            @click="undoThrow"
-          >
-            Annuler
-          </UButton>
-          <UButton
-            color="success"
-            trailing-icon="i-lucide-check"
-            size="xl"
-            @click="confirmThrows"
-          >
-            Confirmer
-          </UButton>
-        </div>
+    <SplitterGroup auto-save-id="cricket-layout" direction="horizontal">
+      <SplitterPanel class="w-40 max-h-full overflow-y-auto" :default-size="20">
+        <DartThrowStack :player-names="state.players" :throws="state.throws" />
+      </SplitterPanel>
+
+      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
+
+      <SplitterPanel class="space-y-3 col-span-2 flex-1">
+        <DartCommands
+          :can-undo="canUndo"
+          @undo="undo"
+          @confirm-throws="confirmThrows"
+        />
 
         <DartBoard
           :disabled="waitingForConfirmation"
@@ -80,30 +58,27 @@ function revenge() {
           @hit="recordThrow"
         />
 
-        <div class="grid grid-cols-3 text-5xl whitespace-nowrap">
-          <div v-for="i in 3" :key="i" class="py-3 text-center">
-            <span v-if="currentThrows[i - 1]" class="font-bold">
-              {{ currentThrows[i - 1]?.dartThrow.label }}
-            </span>
-            <span v-else>·</span>
-          </div>
-        </div>
-      </div>
+        <DartCurrentThrows
+          :current-throws="currentThrows"
+          @auto-confirm-throws="confirmThrows"
+        />
+      </SplitterPanel>
 
-      <div class="flex flex-col gap-4 h-full">
-        <DartRound :round="gameState.round" />
+      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
+
+      <SplitterPanel
+        class="flex flex-col gap-4 h-full w-120"
+        :default-size="25"
+      >
+        <DartRound :round="round" />
         <CricketScoreTable
-          v-for="(player, i) in gameState.players"
+          v-for="(player, i) in players"
           :key="i"
           :player-name="player.name"
-          :active="gameState.currentPlayerIndex === i"
-          :table="
-            gameState.currentPlayerIndex === i
-              ? currentPlayerFutureTable
-              : player.table
-          "
+          :is-current-player="currentPlayer === i"
+          :table="player.table"
         />
-      </div>
-    </div>
+      </SplitterPanel>
+    </SplitterGroup>
   </div>
 </template>

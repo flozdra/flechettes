@@ -3,15 +3,14 @@ import { ref } from "vue";
 
 const games = ref<DoubleOutGame[]>([]);
 
-for (const i in localStorage) {
-  if (i.startsWith("double-out-")) {
-    games.value.push(
-      JSON.parse(localStorage.getItem(i) as string) as DoubleOutGame
-    );
+for (const key in localStorage) {
+  if (key.startsWith("double-out")) {
+    const game = reactive(useDoubleOut(key));
+    games.value.push(game);
   }
 }
 
-games.value.sort((a, b) => b.createdAt - a.createdAt);
+games.value.sort((a, b) => b.state.createdAt - a.state.createdAt);
 
 function formatDate(createdAt: number) {
   return new Date(createdAt).toLocaleString("fr-FR", {
@@ -26,8 +25,8 @@ function formatDate(createdAt: number) {
 
 function deleteGame(gameId: string) {
   if (confirm("Êtes-vous sûr de vouloir supprimer cette partie ?")) {
+    games.value = games.value.filter((game) => game.state.id !== gameId);
     localStorage.removeItem(gameId);
-    games.value = games.value.filter((game) => game.id !== gameId);
   }
 }
 
@@ -46,43 +45,46 @@ const rows = computed(() => {
     <UTable
       :data="rows"
       :columns="[
-        { accessorKey: 'score', header: 'Type' },
+        { accessorKey: 'initialScore', header: 'Type' },
         { accessorKey: 'players', header: 'Joueurs' },
         { accessorKey: 'round', header: 'Round' },
-        { accessorKey: 'winnerIndex', header: 'Gagnant' },
+        { accessorKey: 'winner', header: 'Gagnant' },
         { accessorKey: 'createdAt', header: 'Créé le' },
         { id: 'actions' },
       ]"
-      @select="(row) => navigateTo('/double-out/' + row.original.id)"
+      @select="(row) => navigateTo('/double-out/' + row.original.state.id)"
     >
       <template #createdAt-cell="{ cell }">
-        <span>{{ formatDate(cell.getValue() as number) }}</span>
+        <span>{{ formatDate(cell.row.original.state.createdAt) }}</span>
       </template>
-      <template #score-cell="{ cell }">
-        <UBadge :color="cell.getValue() === 301 ? 'primary' : 'warning'">
-          {{ cell.getValue() as DoubleOutGame["score"] }}
+      <template #initialScore-cell="{ cell }">
+        <UBadge
+          :color="
+            cell.row.original.state.initialScore === 301 ? 'primary' : 'warning'
+          "
+        >
+          {{ cell.row.original.state.initialScore }}
         </UBadge>
       </template>
       <template #round-cell="{ cell }">
-        {{ cell.getValue() as DoubleOutGame["round"] }}
+        {{ cell.row.original.round }}
       </template>
       <template #players-cell="{ cell }">
         <span class="flex gap-1">
           <template
-            v-for="(player, i) in cell.getValue() as DoubleOutGame['players']"
+            v-for="(player, i) in cell.row.original.state.players"
             :key="i"
           >
             <template v-if="i > 0"> - </template>
-            {{ player.name }}
+            {{ player }}
           </template>
         </span>
       </template>
-      <template #winnerIndex-cell="{ cell }">
+      <template #winner-cell="{ cell }">
         <span>
           {{
-            (cell.getValue() as number) !== null
-              ? "🏆 " +
-                cell.row.original.players[cell.getValue() as number].name
+            cell.row.original.winner !== null
+              ? "🏆 " + cell.row.original.winner.name
               : "-"
           }}
         </span>
@@ -93,8 +95,12 @@ const rows = computed(() => {
             :content="{ align: 'end' }"
             :items="[
               {
+                label: 'Revanche',
+                onSelect: () => cell.row.original.revenge(),
+              },
+              {
                 label: 'Supprimer',
-                onSelect: () => deleteGame(cell.row.original.id),
+                onSelect: () => deleteGame(cell.row.original.state.id),
               },
             ]"
           >

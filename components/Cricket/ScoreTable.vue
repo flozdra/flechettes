@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 interface Props {
   playerName: string;
-  active: boolean;
+  isCurrentPlayer: boolean;
   table: CricketTable;
 }
 defineProps<Props>();
@@ -11,7 +11,7 @@ defineProps<Props>();
   <div
     class="px-4 pt-2 pb-4 rounded-lg space-y-3 text-center border border-accented relative"
     :class="
-      active
+      isCurrentPlayer
         ? 'border bg-primary/10 border-primary/25 '
         : 'opacity-60 italic font-medium'
     "
@@ -20,7 +20,7 @@ defineProps<Props>();
       {{ playerName }}
     </div>
     <UBadge variant="outline" class="absolute top-2 right-2">
-      {{ 21 - getRemainingThrows(table) }} / 21
+      {{ getAchievedThrows(table) }} / 21
     </UBadge>
 
     <div class="flex justify-between rounded-lg text-lg font-bold">
@@ -35,7 +35,7 @@ defineProps<Props>();
 
     <UProgress
       class="mt-3"
-      :model-value="21 - getRemainingThrows(table)"
+      :model-value="getAchievedThrows(table)"
       :max="21"
       color="primary"
     />

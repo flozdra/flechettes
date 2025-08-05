@@ -1,36 +1,31 @@
 <script setup lang="ts">
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from "reka-ui";
+
 const route = useRoute();
 
 const {
-  gameState,
-  rankings,
-  winner,
-  canUndoTurn,
-  undoTurn,
-  canUndoThrow,
-  undoThrow,
-  waitingForConfirmation,
-  confirmThrows,
+  state,
+  players,
+  currentPlayer,
+  round,
+  ranking,
   currentThrows,
-  currentThrowsScore,
+  invalidTurn,
+  winner,
   currentPlayerHighlights,
   winningCombination,
   recordThrow,
+  waitingForConfirmation,
+  confirmThrows,
+  canUndo,
+  undo,
+  revenge,
 } = useDoubleOut(route.params.double_out_id as string);
 
 defineShortcuts({
   enter: () => confirmThrows(),
-  backspace: () => undoThrow(),
-  escape: () => undoTurn(),
+  backspace: () => undo(),
 });
-
-function revenge() {
-  const gameId = createNewDoubleOut(
-    gameState.value.score,
-    gameState.value.players.map((p) => p.name)
-  );
-  navigateTo(`/double-out/${gameId}`);
-}
 </script>
 
 <template>
@@ -38,42 +33,28 @@ function revenge() {
     <DartWinnerOverlay
       to="/"
       :winner="winner"
-      :rankings="rankings"
+      :rankings="ranking"
       @revenge="revenge"
-      @undo-turn="undoTurn"
+      @undo-turn="undo"
     />
 
-    <div class="grid grid-cols-3 gap-3">
-      <div class="space-y-3 col-span-2">
-        <div class="flex gap-3">
-          <UButton
-            color="error"
-            :hidden="!canUndoTurn"
-            icon="i-lucide-arrow-left"
-            size="xl"
-            @click="undoTurn"
-          >
-            Revenir au tour précédent
-          </UButton>
-          <div class="grow" />
-          <UButton
-            color="error"
-            :hidden="!canUndoThrow"
-            icon="i-lucide-undo"
-            size="xl"
-            @click="undoThrow"
-          >
-            Annuler
-          </UButton>
-          <UButton
-            color="success"
-            trailing-icon="i-lucide-check"
-            size="xl"
-            @click="confirmThrows"
-          >
-            Confirmer
-          </UButton>
-        </div>
+    <SplitterGroup auto-save-id="double-out-layout" direction="horizontal">
+      <SplitterPanel class="w-40 max-h-full overflow-y-auto" :default-size="20">
+        <DartThrowStack
+          :player-names="state.players"
+          :throws="state.throws"
+          show-total
+        />
+      </SplitterPanel>
+
+      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
+
+      <SplitterPanel class="space-y-3 col-span-2 flex-1">
+        <DartCommands
+          :can-undo="canUndo"
+          @undo="undo"
+          @confirm-throws="confirmThrows"
+        />
 
         <DartBoard
           :disabled="waitingForConfirmation"
@@ -82,75 +63,31 @@ function revenge() {
           @hit="recordThrow"
         />
 
-        <div class="grid grid-cols-4 text-5xl whitespace-nowrap">
-          <div v-for="i in 3" :key="i" class="py-3 text-center">
-            <span v-if="currentThrows[i - 1]" class="font-bold">
-              {{ currentThrows[i - 1]?.dartThrow.label }}
-            </span>
-            <span
-              v-else-if="winningCombination?.throws[i - 1]"
-              class="italic opacity-50"
-            >
-              {{
-                winningCombination.throws[i - 1].id === "OUT"
-                  ? "·"
-                  : winningCombination.throws[i - 1].label
-              }}
-            </span>
-            <span v-else>·</span>
-          </div>
+        <DartCurrentThrows
+          :current-throws="currentThrows"
+          :invalid-turn="invalidTurn"
+          show-score
+          :winning-combination="winningCombination"
+          @auto-confirm-throws="confirmThrows"
+        />
+      </SplitterPanel>
 
-          <UBadge
-            class="justify-center w-30 mx-auto text-5xl rounded-xl font-bold"
-            variant="subtle"
-            :color="
-              currentThrowsScore === 0
-                ? 'neutral'
-                : currentThrowsScore >
-                  gameState.players[gameState.currentPlayerIndex].score
-                ? 'error'
-                : 'success'
-            "
-          >
-            {{ currentThrowsScore }}
-          </UBadge>
-        </div>
-      </div>
+      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
 
-      <div class="flex flex-col gap-4 h-full">
-        <DartRound :round="gameState.round" />
-        <div
-          v-for="(player, i) in gameState.players"
+      <SplitterPanel
+        class="flex flex-col gap-4 h-full w-120"
+        :default-size="25"
+      >
+        <DartRound :round="round" />
+        <DoubleOutPlayerScore
+          v-for="(player, i) in players"
           :key="i"
-          class="px-4 py-2 rounded-lg text-4xl font-bold border border-accented space-y-1.5"
-          :class="{
-            'border bg-primary/10 border-primary/25 ':
-              gameState.currentPlayerIndex === i,
-            'opacity-60 italic font-medium': gameState.currentPlayerIndex !== i,
-          }"
-        >
-          <div class="flex items-center justify-between">
-            <span>{{ player.name }}</span>
-            <span>{{ player.score }}</span>
-          </div>
-          <UProgress
-            :model-value="gameState.score - player.score"
-            :max="gameState.score"
-            color="primary"
-          />
-          <div class="flex items-center text-sm font-normal">
-            Derniers lancés :
-            <div class="grow" />
-            <span
-              v-for="(t, j) in player.throws[player.throws.length - 1] ?? []"
-              :key="j"
-            >
-              {{ t.dartThrow.label }}
-              <span class="mx-1">{{ j < 2 ? " · " : "" }}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+          :player="player"
+          :is-current-player="currentPlayer === i"
+          :invalid-turn="invalidTurn"
+          :initial-score="state.initialScore"
+        />
+      </SplitterPanel>
+    </SplitterGroup>
   </div>
 </template>

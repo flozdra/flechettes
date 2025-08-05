@@ -1,28 +1,222 @@
 import { useLocalStorage } from "@vueuse/core";
 
-type Combination = { total: number; throws: DartThrow[] };
+export type DoubleOutState = {
+  id: string;
+  createdAt: number;
+  initialScore: 301 | 501;
+  players: string[];
+  throws: DartThrowRecord[][];
+  version: number; // Versioning for future updates
+};
 
-/**
- * Predictions for the upcomuing throws.
- * It is used when a player can win the game within the next turn.
- */
-const allPossibleThrows = Object.values(DartThrows);
-const possibleCombinations: Combination[] = [];
-for (let i = allPossibleThrows.length - 1; i >= 0; i--) {
-  for (let j = allPossibleThrows.length - 1; j >= 0; j--) {
-    for (let k = allPossibleThrows.length - 1; k >= 0; k--) {
-      const throws = [
-        allPossibleThrows[i],
-        allPossibleThrows[j],
-        allPossibleThrows[k],
-      ];
-      const total = throws[0].score + throws[1].score + throws[2].score;
-      possibleCombinations.push({ total, throws });
-    }
-  }
+/** Create a new Double Out game and navigate to it */
+export function createNewDoubleOut(initialScore: 301 | 501, players: string[]) {
+  const gameId = `double-out-${Date.now()}`;
+  useLocalStorage<DoubleOutState>(gameId, {
+    id: gameId,
+    createdAt: Date.now(),
+    initialScore,
+    players,
+    throws: [[]],
+    version: 2,
+  });
+  navigateTo(`/double-out/${gameId}`);
 }
 
-export type DoubleOutGame = {
+/** Compute the total score for a turn */
+function getTurnScore(records: DartThrowRecord[]) {
+  return records.reduce((sum, record) => sum + record.dartThrow.score, 0);
+}
+
+/**
+ * Return the logic of a Double Out game.
+ */
+export function useDoubleOut(gameId: string) {
+  const gameState = useLocalStorage(gameId, {} as DoubleOutState, {
+    deep: true,
+  });
+  // If the game state is empty, it means the game does not exist
+  if (Object.keys(gameState.value).length === 0) {
+    gameState.value = null; // Remove the game state from localStorage
+    throw new Error("Game data not found. Please start a new game.");
+  }
+  // Convert from version 1 to version 2 if needed
+  if (gameState.value.version === 1) {
+    gameState.value = convertDoubleOutFromV1ToV2(
+      gameState.value as unknown as DoubleOutStateV1
+    );
+  }
+
+  /** Current turn of the game (starts at 0) */
+  const turn = computed(() => gameState.value.throws.length - 1);
+
+  /** Current round of the game (starts at 1) */
+  const round = computed(() => {
+    return Math.floor(turn.value / gameState.value.players.length) + 1;
+  });
+
+  /** Players with their scores computed */
+  const players = computed(() => {
+    const playerScores = gameState.value.players.map((name) => ({
+      name,
+      invalid: false,
+      score: gameState.value.initialScore as number,
+    }));
+
+    for (let i = 0; i <= turn.value; i++) {
+      const turnScore = getTurnScore(gameState.value.throws[i]);
+      const lastThrow = gameState.value.throws[i].slice(-1)[0];
+      const isLastThrowValid = lastThrow?.dartThrow.id.startsWith("D");
+      const playerIndex = i % gameState.value.players.length;
+      const remainingScore = playerScores[playerIndex].score - turnScore;
+      // Valid turn
+      if (remainingScore > 1) {
+        playerScores[playerIndex].score = remainingScore;
+      } // Player won
+      else if (remainingScore === 0 && isLastThrowValid) {
+        playerScores[playerIndex].score = 0;
+      } // Set invalid scores only for last turn
+      else if (i === turn.value) {
+        playerScores[playerIndex].invalid = true;
+        playerScores[playerIndex].score = remainingScore; // Overflow or cannot halve
+      }
+    }
+
+    return playerScores;
+  });
+
+  /** If the current player's turn is invalid */
+  const invalidTurn = computed(() => {
+    return players.value[currentPlayer.value].invalid;
+  });
+
+  /** Current player index */
+  const currentPlayer = computed(() => {
+    return turn.value % gameState.value.players.length;
+  });
+
+  /** Current player's throws */
+  const currentThrows = computed<DartThrowRecord[]>(() => {
+    return gameState.value.throws[turn.value];
+  });
+
+  /** Players sorted by score */
+  const ranking = computed(() =>
+    players.value.toSorted((p1, p2) => p1.score - p2.score)
+  );
+
+  /** Current winner if exists */
+  const winner = computed(() => {
+    return players.value.find((p) => p.score === 0 && !p.invalid) || null;
+  });
+
+  /** If the current player's turn is ended */
+  const waitingForConfirmation = computed(() => {
+    return currentThrows.value.length === 3; // || winner.value !== null;
+  });
+
+  /** Record a dart throw with its coordinates */
+  function recordThrow(dartThrow: DartThrow, coordinates: ThrowCoordinates) {
+    if (waitingForConfirmation.value) return;
+
+    // Keep reactivity by creating a new array
+    gameState.value.throws[turn.value] = [
+      ...gameState.value.throws[turn.value],
+      {
+        id: turn.value * 3 + gameState.value.throws[turn.value].length,
+        dartThrow,
+        coordinates,
+      },
+    ];
+  }
+
+  /** Pass to the next turn */
+  function confirmThrows() {
+    gameState.value.throws.push([]);
+  }
+
+  /** Best winning combination based on the current player's score */
+  const winningCombination = computed(() => {
+    if (invalidTurn.value) return [];
+
+    const currentPlayerScore = players.value[currentPlayer.value].score;
+    // Get the possible combinations based on the remaining darts
+    const combinations =
+      currentThrows.value.length === 0
+        ? threeDartsCombinations
+        : currentThrows.value.length === 1
+        ? twoDartsCombinations
+        : oneDartCombinations;
+    // Find the best combination that matches the current player's score
+    const possibleCombinations = combinations
+      .filter((c) => c.total === currentPlayerScore)
+      .sort(
+        (a, b) =>
+          b.throws[2]?.score - a.throws[2]?.score ||
+          b.throws[1]?.score - a.throws[1]?.score ||
+          b.throws[0]?.score - a.throws[0]?.score
+      );
+    const bestCombination = possibleCombinations[0]?.throws;
+    if (!bestCombination) return [];
+    return currentThrows.value
+      .map((t) => t.dartThrow)
+      .concat(bestCombination.map((t) => t));
+  });
+
+  /** Best winning combination throw IDs */
+  const currentPlayerHighlights = computed(() => {
+    return winningCombination.value.map((dartThrow) => dartThrow.id);
+  });
+
+  /** Undo the last throw or the last turn */
+  function undo() {
+    if (currentThrows.value.length > 0) {
+      // Remove the last throw
+      gameState.value.throws[turn.value] = gameState.value.throws[
+        turn.value
+      ].slice(0, -1);
+    } else if (gameState.value.throws.length > 1) {
+      // Back to the previous turn
+      gameState.value.throws = gameState.value.throws.slice(0, -1);
+    }
+  }
+
+  const canUndo = computed(() => {
+    return currentThrows.value.length > 0 || gameState.value.throws.length > 1;
+  });
+
+  /** Start a new game with the same config */
+  function revenge() {
+    createNewDoubleOut(gameState.value.initialScore, gameState.value.players);
+  }
+
+  return {
+    state: computed(() => gameState.value), // Read-only state
+    players,
+    currentPlayer,
+    round,
+    ranking,
+    currentThrows,
+    invalidTurn,
+    winner,
+    winningCombination,
+    currentPlayerHighlights,
+    recordThrow,
+    waitingForConfirmation,
+    confirmThrows,
+    canUndo,
+    undo,
+    revenge,
+  };
+}
+export type DoubleOutGame = ReturnType<typeof useDoubleOut>;
+
+/*
+|--------------------------------------------------------------------------
+| Double Out state versioning
+|--------------------------------------------------------------------------
+*/
+type DoubleOutStateV1 = {
   id: string;
   createdAt: number;
   score: 301 | 501;
@@ -30,221 +224,29 @@ export type DoubleOutGame = {
   round: number;
   currentPlayerIndex: number;
   winnerIndex: number | null;
-  version: number; // Versioning for future updates
+  version: 1;
 };
 
-export function createNewDoubleOut(score: 301 | 501, playerName: string[]) {
-  const gameId = `double-out-${Date.now()}`;
-  useLocalStorage<DoubleOutGame>(gameId, {
-    id: gameId,
-    createdAt: Date.now(),
-    score,
-    players: playerName.map((name) => ({ name, score, throws: [] })),
-    round: 1,
-    currentPlayerIndex: 0,
-    winnerIndex: null,
-    version: 1,
-  });
-  return gameId;
-}
-
 /**
- * Return the logic of a Double Out game.
+ * Convert a Double Out game from version 1 to version 2.
  */
-export function useDoubleOut(gameId: string) {
-  const settings = useSettings();
-  const soundEffects = useSoundEffects();
-
-  const gameState = useLocalStorage<DoubleOutGame>(
-    gameId,
-    {} as DoubleOutGame,
-    { deep: true }
-  );
-  if (Object.keys(gameState.value).length === 0) {
-    gameState.value = null; // Remove the game state from localStorage
-    throw new Error("Game data not found. Please start a new game.");
-  }
-
-  const currentThrows = ref<DartThrowRecord[]>([]);
-  const currentThrowsScore = computed(() =>
-    currentThrows.value.reduce((sum, record) => sum + record.dartThrow.score, 0)
-  );
-
-  const winner = computed(() =>
-    gameState.value.winnerIndex !== null
-      ? gameState.value.players[gameState.value.winnerIndex]
-      : null
-  );
-
-  /**
-   * Waiting confirmation when the player has thrown 3 darts or will win
-   * with the current throws.
-   */
-  const waitingForConfirmation = computed(() => {
-    return (
-      currentThrows.value.length === 3 ||
-      gameState.value.players[gameState.value.currentPlayerIndex].score ===
-        currentThrowsScore.value
-    );
-  });
-
-  function recordThrow(
-    dartThrow: DartThrow,
-    coordinates: { x: number; y: number }
-  ) {
-    if (waitingForConfirmation.value) return;
-
-    const roundIndex = gameState.value.round - 1;
-
-    currentThrows.value.push({
-      id: roundIndex + currentThrows.value.length + 1,
-      dartThrow,
-      coordinates,
-    });
-
-    if (dartThrow.id === "OUT") {
-      soundEffects.fart.play();
-    } else if (dartThrow.id === "DB") {
-      soundEffects.sniper.play();
-    } else if (dartThrow.score >= 15) {
-      soundEffects.rifle.play();
-    } else {
-      soundEffects.hitDart.play();
-    }
-
-    if (settings.value.autoConfirmThrows && waitingForConfirmation.value) {
-      confirmThrows();
+export function convertDoubleOutFromV1ToV2(
+  game: DoubleOutStateV1
+): DoubleOutState {
+  const throws: DartThrowRecord[][] = [];
+  for (let i = 0; i < game.round; i++) {
+    for (const player of game.players) {
+      if (player.throws[i]) {
+        throws.push(player.throws[i]);
+      }
     }
   }
-
-  function confirmThrows() {
-    const currentPlayer =
-      gameState.value.players[gameState.value.currentPlayerIndex];
-    const roundIndex = gameState.value.round - 1;
-
-    currentPlayer.throws[roundIndex] = [...currentThrows.value];
-    currentPlayer.score -= currentThrowsScore.value;
-
-    if (currentPlayer.score < 0) {
-      currentPlayer.score += currentThrowsScore.value; // Revert score if it goes below zero
-    }
-    if (currentPlayer.score === 0) {
-      gameState.value.winnerIndex = gameState.value.currentPlayerIndex; // Set the winner if score is zero
-    }
-
-    currentThrows.value.length = 0;
-
-    gameState.value.currentPlayerIndex++;
-
-    // Return to first player if all players have thrown
-    if (gameState.value.currentPlayerIndex >= gameState.value.players.length) {
-      gameState.value.currentPlayerIndex = 0;
-      gameState.value.round++;
-    }
-  }
-
-  const winningCombination = computed<Combination | null>(() => {
-    const currentPlayerScore =
-      gameState.value.players[gameState.value.currentPlayerIndex].score;
-
-    let possibleThrows: Combination[] = [];
-    if (currentThrows.value.length === 0) {
-      possibleThrows = possibleCombinations.filter(
-        (combination) => combination.total === currentPlayerScore
-      );
-    }
-    if (currentThrows.value.length === 1) {
-      possibleThrows = possibleCombinations.filter(
-        (combination) =>
-          combination.throws[0].id === currentThrows.value[0].dartThrow.id &&
-          combination.total === currentPlayerScore
-      );
-    }
-    if (currentThrows.value.length === 2) {
-      possibleThrows = possibleCombinations.filter(
-        (combination) =>
-          combination.throws[0].id === currentThrows.value[0].dartThrow.id &&
-          combination.throws[1].id === currentThrows.value[1].dartThrow.id &&
-          combination.total === currentPlayerScore
-      );
-    }
-    possibleThrows.sort(
-      (a, b) =>
-        b.throws[0].score - a.throws[0].score ||
-        b.throws[1].score - a.throws[1].score ||
-        b.throws[2].score - a.throws[2].score
-    );
-    return possibleThrows[0] ?? null;
-  });
-
-  const currentPlayerHighlights = computed(() => {
-    if (winningCombination.value === null) {
-      return [];
-    }
-    return winningCombination.value.throws.map((dartThrow) => dartThrow.id);
-  });
-
-  const canUndoThrow = computed(() => {
-    return currentThrows.value.length > 0;
-  });
-  function undoThrow() {
-    if (!canUndoThrow.value) {
-      return;
-    }
-    currentThrows.value.pop();
-  }
-
-  const canUndoTurn = computed(() => {
-    return (
-      currentThrows.value.length === 0 &&
-      (gameState.value.currentPlayerIndex > 0 || gameState.value.round > 1)
-    );
-  });
-
-  /**
-   * Undo the last turn. It moves the last player throws to the current throws,
-   * and recrements the player's score.
-   */
-  function undoTurn() {
-    if (!canUndoTurn.value) {
-      return;
-    }
-
-    gameState.value.winnerIndex = null; // Reset winner index
-    gameState.value.currentPlayerIndex--;
-    if (gameState.value.currentPlayerIndex < 0) {
-      gameState.value.currentPlayerIndex = gameState.value.players.length - 1;
-      gameState.value.round--;
-    }
-    const currentPlayer =
-      gameState.value.players[gameState.value.currentPlayerIndex];
-    // Restore the last round's throws
-    currentThrows.value = currentPlayer.throws[gameState.value.round - 1];
-    // Remove the last round's throws
-    currentPlayer.throws.splice(gameState.value.round - 1, 1);
-    // Reset the score for the current player
-    currentPlayer.score += currentThrowsScore.value;
-  }
-
-  // Players sorted by score
-  const rankings = computed(() =>
-    gameState.value.players.toSorted((p1, p2) => p1.score - p2.score)
-  );
-
   return {
-    gameState,
-    rankings,
-    currentThrows,
-    currentThrowsScore,
-    currentPlayerHighlights,
-    waitingForConfirmation,
-    winner,
-    winningCombination,
-    recordThrow,
-    confirmThrows,
-    canUndoThrow,
-    undoThrow,
-    canUndoTurn,
-    undoTurn,
+    id: game.id,
+    createdAt: game.createdAt,
+    initialScore: game.score,
+    players: game.players.map(({ name }) => name),
+    throws,
+    version: 2,
   };
 }

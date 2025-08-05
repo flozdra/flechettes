@@ -22,8 +22,7 @@ const validPlayers = computed(() => {
 });
 
 function createNewGame() {
-  const gameId = createNewCricket(validPlayers.value);
-  navigateTo(`/cricket/${gameId}`);
+  createNewCricket(validPlayers.value);
 }
 </script>
 
