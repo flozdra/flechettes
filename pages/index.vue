@@ -14,6 +14,11 @@ const items = ref<TabsItem[]>([
     icon: "i-lucide-goal",
     slot: "cricket",
   },
+  {
+    label: "La Moitié",
+    icon: "i-lucide-divide",
+    slot: "halve-it",
+  },
 ]);
 </script>
 
@@ -35,6 +40,15 @@ const items = ref<TabsItem[]>([
 
           <CricketNewGame />
           <CricketTable />
+        </div>
+      </template>
+
+      <template #halve-it>
+        <div class="space-y-3">
+          <p class="text-2xl font-bold">La Moitié</p>
+
+          <HalveItNewGame />
+          <HalveItTable />
         </div>
       </template>
     </UTabs>

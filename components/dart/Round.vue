@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 interface Props {
   round: number;
+  customLabel?: string;
 }
 const props = defineProps<Props>();
 
@@ -20,7 +21,7 @@ watch(
   <div>
     <Transition :name="transition" mode="out-in">
       <div :key="displayedRound" class="text-4xl font-bold px-4 text-center">
-        Tour {{ displayedRound }}
+        {{ customLabel || `Tour ${displayedRound}` }}
       </div>
     </Transition>
   </div>

@@ -112,7 +112,7 @@ export function useDoubleOut(gameId: string) {
 
   /** If the current player's turn is ended */
   const waitingForConfirmation = computed(() => {
-    return currentThrows.value.length === 3; // || winner.value !== null;
+    return currentThrows.value.length === 3;
   });
 
   /** Record a dart throw with its coordinates */
