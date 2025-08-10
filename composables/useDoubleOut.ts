@@ -4,18 +4,24 @@ export type DoubleOutState = {
   id: string;
   createdAt: number;
   initialScore: 301 | 501;
+  endWithDouble: boolean;
   players: string[];
   throws: DartThrowRecord[][];
   version: number; // Versioning for future updates
 };
 
 /** Create a new Double Out game and navigate to it */
-export function createNewDoubleOut(initialScore: 301 | 501, players: string[]) {
+export function createNewDoubleOut(
+  initialScore: 301 | 501,
+  endWithDouble: boolean,
+  players: string[]
+) {
   const gameId = `double-out-${Date.now()}`;
   useLocalStorage<DoubleOutState>(gameId, {
     id: gameId,
     createdAt: Date.now(),
     initialScore,
+    endWithDouble,
     players,
     throws: [[]],
     version: 2,
@@ -66,19 +72,33 @@ export function useDoubleOut(gameId: string) {
     for (let i = 0; i <= turn.value; i++) {
       const turnScore = getTurnScore(gameState.value.throws[i]);
       const lastThrow = gameState.value.throws[i].slice(-1)[0];
-      const isLastThrowValid = lastThrow?.dartThrow.id.startsWith("D");
       const playerIndex = i % gameState.value.players.length;
       const remainingScore = playerScores[playerIndex].score - turnScore;
-      // Valid turn
-      if (remainingScore > 1) {
-        playerScores[playerIndex].score = remainingScore;
-      } // Player won
-      else if (remainingScore === 0 && isLastThrowValid) {
-        playerScores[playerIndex].score = 0;
-      } // Set invalid scores only for last turn
-      else if (i === turn.value) {
-        playerScores[playerIndex].invalid = true;
-        playerScores[playerIndex].score = remainingScore; // Overflow or cannot halve
+
+      if (gameState.value.endWithDouble) {
+        const isLastThrowValid = lastThrow?.dartThrow.id.startsWith("D");
+        // Valid turn
+        if (remainingScore > 1) {
+          playerScores[playerIndex].score = remainingScore;
+        } // Player won
+        else if (remainingScore === 0 && isLastThrowValid) {
+          playerScores[playerIndex].score = 0;
+        } // Set invalid scores only for last turn
+        else if (i === turn.value) {
+          playerScores[playerIndex].invalid = true;
+          playerScores[playerIndex].score = remainingScore; // Overflow or cannot halve
+        }
+      } else {
+        if (remainingScore > 0) {
+          playerScores[playerIndex].score = remainingScore;
+        } // Player won
+        else if (remainingScore === 0) {
+          playerScores[playerIndex].score = 0;
+        } // Set invalid scores only for last turn
+        else if (i === turn.value) {
+          playerScores[playerIndex].invalid = true;
+          playerScores[playerIndex].score = remainingScore; // Overflow or cannot halve
+        }
       }
     }
 
@@ -132,35 +152,20 @@ export function useDoubleOut(gameId: string) {
 
   /** Pass to the next turn */
   function confirmThrows() {
+    if (winner.value) return;
     gameState.value.throws.push([]);
   }
 
   /** Best winning combination based on the current player's score */
   const winningCombination = computed(() => {
     if (invalidTurn.value) return [];
-
     const currentPlayerScore = players.value[currentPlayer.value].score;
-    // Get the possible combinations based on the remaining darts
-    const combinations =
-      currentThrows.value.length === 0
-        ? threeDartsCombinations
-        : currentThrows.value.length === 1
-        ? twoDartsCombinations
-        : oneDartCombinations;
-    // Find the best combination that matches the current player's score
-    const possibleCombinations = combinations
-      .filter((c) => c.total === currentPlayerScore)
-      .sort(
-        (a, b) =>
-          b.throws[2]?.score - a.throws[2]?.score ||
-          b.throws[1]?.score - a.throws[1]?.score ||
-          b.throws[0]?.score - a.throws[0]?.score
-      );
-    const bestCombination = possibleCombinations[0]?.throws;
-    if (!bestCombination) return [];
-    return currentThrows.value
-      .map((t) => t.dartThrow)
-      .concat(bestCombination.map((t) => t));
+    const bestCombination = getBestCombination(
+      currentPlayerScore,
+      currentThrows.value.map((t) => t.dartThrow),
+      gameState.value.endWithDouble
+    );
+    return currentThrows.value.map((t) => t.dartThrow).concat(bestCombination);
   });
 
   /** Best winning combination throw IDs */
@@ -187,7 +192,11 @@ export function useDoubleOut(gameId: string) {
 
   /** Start a new game with the same config */
   function revenge() {
-    createNewDoubleOut(gameState.value.initialScore, gameState.value.players);
+    createNewDoubleOut(
+      gameState.value.initialScore,
+      gameState.value.endWithDouble,
+      gameState.value.players
+    );
   }
 
   return {
@@ -245,6 +254,7 @@ export function convertDoubleOutFromV1ToV2(
     id: game.id,
     createdAt: game.createdAt,
     initialScore: game.score,
+    endWithDouble: false,
     players: game.players.map(({ name }) => name),
     throws,
     version: 2,

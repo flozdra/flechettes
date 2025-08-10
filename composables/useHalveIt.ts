@@ -135,6 +135,7 @@ export function useHalveIt(gameId: string) {
 
   /** Pass to the next turn */
   function confirmThrows() {
+    if (winner.value) return;
     gameState.value.throws.push([]);
   }
 

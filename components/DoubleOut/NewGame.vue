@@ -5,6 +5,7 @@ const knownPlayers = useLocalStorage<string[]>("known-players", []);
 
 const players = ref<string[]>(["", "", "", ""]);
 const score = ref<301 | 501>(301);
+const endWithDouble = ref<boolean>(false);
 
 const options = computed(() => {
   return knownPlayers.value.filter((p) => !players.value.includes(p));
@@ -23,7 +24,7 @@ const validPlayers = computed(() => {
 });
 
 function createNewGame() {
-  createNewDoubleOut(score.value, validPlayers.value);
+  createNewDoubleOut(score.value, endWithDouble.value, validPlayers.value);
 }
 </script>
 
@@ -45,6 +46,11 @@ function createNewGame() {
             { label: '501', value: 501 },
           ]"
           :ui="{ item: 'grow text-center text-lg py-2 items-center' }"
+        />
+
+        <UCheckbox
+          v-model="endWithDouble"
+          label="Finir la partie avec un double"
         />
 
         <div v-for="(_, i) in players" :key="i" class="flex gap-1.5">
