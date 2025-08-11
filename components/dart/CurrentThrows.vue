@@ -64,8 +64,11 @@ watch(
         >
           {{ currentThrows[i - 1].dartThrow.label }}
         </span>
-        <span v-else-if="winningCombination?.[i - 1]" class="italic opacity-50">
-          {{ winningCombination[i - 1].label }}
+        <span
+          v-else-if="winningCombination?.[i - 1 - currentThrows.length]"
+          class="italic opacity-50"
+        >
+          {{ winningCombination[i - 1 - currentThrows.length].label }}
         </span>
         <span v-else>·</span>
       </div>

@@ -160,12 +160,11 @@ export function useDoubleOut(gameId: string) {
   const winningCombination = computed(() => {
     if (invalidTurn.value) return [];
     const currentPlayerScore = players.value[currentPlayer.value].score;
-    const bestCombination = getBestCombination(
+    return getBestCombination(
       currentPlayerScore,
       currentThrows.value.map((t) => t.dartThrow),
       gameState.value.endWithDouble
     );
-    return currentThrows.value.map((t) => t.dartThrow).concat(bestCombination);
   });
 
   /** Best winning combination throw IDs */
