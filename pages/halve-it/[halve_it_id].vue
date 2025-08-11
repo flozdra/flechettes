@@ -38,19 +38,16 @@ defineShortcuts({
     />
 
     <SplitterGroup auto-save-id="halve-it-layout" direction="horizontal">
-      <SplitterPanel class="w-40 max-h-full overflow-y-auto" :default-size="20">
+      <SplitterPanel
+        class="max-h-full overflow-y-auto p-3 w-40"
+        :default-size="20"
+      >
         <DartThrowStack :player-names="state.players" :throws="state.throws" />
       </SplitterPanel>
 
-      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
+      <SplitterResizeHandle class="bg-accented w-px" />
 
-      <SplitterPanel class="space-y-3 col-span-2 flex-1">
-        <DartCommands
-          :can-undo="canUndo"
-          @undo="undo"
-          @confirm-throws="confirmThrows"
-        />
-
+      <SplitterPanel class="col-span-2 flex-1 p-3 space-y-3">
         <DartBoard
           :disabled="waitingForConfirmation"
           :hits="currentThrows"
@@ -59,15 +56,17 @@ defineShortcuts({
         />
 
         <DartCurrentThrows
+          :can-undo="canUndo"
           :current-throws="currentThrows"
-          @auto-confirm-throws="confirmThrows"
+          @undo="undo"
+          @confirm-throws="confirmThrows"
         />
       </SplitterPanel>
 
-      <SplitterResizeHandle class="mx-3 w-px bg-accented" />
+      <SplitterResizeHandle class="bg-accented w-px" />
 
       <SplitterPanel
-        class="flex flex-col gap-4 h-full w-120"
+        class="flex flex-col gap-4 h-full p-3 w-120"
         :default-size="25"
       >
         <DartRound :round="round" :custom-label="roundLabel" />

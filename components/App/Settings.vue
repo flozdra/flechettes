@@ -26,7 +26,7 @@ const shortcuts = [
     <template #body>
       <div class="space-y-6 text-sm">
         <div>
-          <p class="font-semibold text-highlighted mb-3">Préférences</p>
+          <p class="font-semibold mb-3 text-highlighted">Préférences</p>
           <div class="space-y-3">
             <USwitch
               v-model="settings.autoConfirmThrows"
@@ -77,10 +77,10 @@ const shortcuts = [
         </UTable>
 
         <div>
-          <p class="font-semibold text-highlighted mb-3">Raccourcis clavier</p>
-          <div class="grid grid-cols-2 gap-2">
+          <p class="font-semibold mb-3 text-highlighted">Raccourcis clavier</p>
+          <div class="gap-2 grid grid-cols-2">
             <template v-for="shortcut in shortcuts" :key="shortcut.key">
-              <div class="flex items-center gap-1.5">
+              <div class="flex gap-1.5 items-center">
                 <UKbd class="min-w-12">{{ shortcut.key }}</UKbd>
                 <span class="text-xs">{{ shortcut.action }}</span>
               </div>

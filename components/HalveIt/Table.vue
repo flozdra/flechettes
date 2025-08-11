@@ -105,7 +105,7 @@ const rows = computed(() => {
       </template>
     </UTable>
 
-    <div class="flex justify-center border-t border-default pt-4">
+    <div class="border-default border-t flex justify-center pt-4">
       <UPagination
         v-model:page="page"
         :items-per-page="perPage"

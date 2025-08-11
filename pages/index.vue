@@ -27,7 +27,7 @@ const items = ref<TabsItem[]>([
     <UTabs v-model="tab" :items="items">
       <template #double-out>
         <div class="space-y-3">
-          <p class="text-2xl font-bold">Double Out</p>
+          <p class="font-bold text-2xl">Double Out</p>
 
           <DoubleOutNewGame />
           <DoubleOutTable />
@@ -36,7 +36,7 @@ const items = ref<TabsItem[]>([
 
       <template #cricket>
         <div class="space-y-3">
-          <p class="text-2xl font-bold">Cricket</p>
+          <p class="font-bold text-2xl">Cricket</p>
 
           <CricketNewGame />
           <CricketTable />
@@ -45,7 +45,7 @@ const items = ref<TabsItem[]>([
 
       <template #halve-it>
         <div class="space-y-3">
-          <p class="text-2xl font-bold">La Moitié</p>
+          <p class="font-bold text-2xl">La Moitié</p>
 
           <HalveItNewGame />
           <HalveItTable />

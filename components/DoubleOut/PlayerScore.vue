@@ -12,7 +12,7 @@ const isInvalid = computed(() => props.invalidTurn && props.isCurrentPlayer);
 
 <template>
   <div
-    class="p-3 rounded-lg text-4xl font-bold border space-y-3 border-accented"
+    class="border border-accented font-bold p-3 rounded-lg space-y-3 text-4xl"
     :class="{
       'opacity-60 italic font-medium': !isCurrentPlayer,
       'bg-primary/10 border-primary/50 ': isCurrentPlayer && !isInvalid,

@@ -61,14 +61,14 @@ defineShortcuts({
 <template>
   <div
     v-if="winner"
-    class="absolute inset-0 z-10 p-12 bg-default/80 space-y-12 backdrop-blur-lg font-bold flex flex-col items-center justify-center"
+    class="absolute backdrop-blur-lg bg-default/80 flex flex-col font-bold inset-0 items-center justify-center p-12 space-y-12 z-10"
   >
-    <div class="text-center text-8xl">🏆 {{ winner.name }} a gagné ! 🏆</div>
+    <div class="text-8xl text-center">🏆 {{ winner.name }} a gagné ! 🏆</div>
 
-    <div class="text-4xl leading-relaxed mx-auto max-w-sm">
+    <div class="leading-relaxed max-w-sm mx-auto text-4xl">
       <div v-for="(player, i) in rankings" :key="i" class="flex">
         <div
-          class="min-w-16 flex items-center relative"
+          class="flex items-center min-w-16 relative"
           :class="i > 2 && 'text-3xl ml-2'"
         >
           {{ i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1 }}

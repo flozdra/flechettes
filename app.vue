@@ -5,9 +5,9 @@ import { fr } from "@nuxt/ui/locale";
 <template>
   <UApp :locale="fr">
     <div class="h-screen">
-      <header class="border-b flex items-center p-3">
-        <NuxtLink to="/" class="inline-flex gap-2 text-2xl items-center">
-          <AppLogo class="w-8 h-8 fill-current" />
+      <header class="border-b border-muted flex items-center p-3">
+        <NuxtLink to="/" class="gap-2 inline-flex items-center text-2xl">
+          <AppLogo class="fill-current size-8" />
           <span class="font-extrabold">Fléchettes</span>
         </NuxtLink>
         <div class="grow" />
@@ -24,7 +24,7 @@ import { fr } from "@nuxt/ui/locale";
         />
       </header>
 
-      <main class="p-3">
+      <main>
         <NuxtPage />
       </main>
     </div>

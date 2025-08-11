@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 interface Props {
+  canUndo: boolean;
   currentThrows: DartThrowRecord[];
   invalidTurn?: boolean;
   showScore?: boolean;
   winningCombination?: DartThrow[];
 }
 const props = defineProps<Props>();
-const emits = defineEmits<{ "auto-confirm-throws": [] }>();
+const emits = defineEmits<{ undo: []; confirmThrows: [] }>();
 
 const currentThrowsScore = computed(() =>
   props.currentThrows.reduce((sum, record) => sum + record.dartThrow.score, 0)
@@ -36,7 +37,7 @@ watch(
     ) {
       // Starts a timeout to auto-confirm throws after a 1500ms
       timeout.value = setTimeout(() => {
-        emits("auto-confirm-throws");
+        emits("confirmThrows");
         timeout.value = null;
       }, 1500);
     }
@@ -46,37 +47,61 @@ watch(
 
 <template>
   <div
-    class="relative grid text-5xl whitespace-nowrap border border-muted p-3 rounded-lg overflow-hidden transition-colors duration-500"
-    :class="{
-      'grid-cols-4': showScore,
-      'grid-cols-3': !showScore,
-    }"
+    class="border border-muted duration-500 flex overflow-hidden relative rounded-2xl transition-colors whitespace-nowrap"
   >
-    <div v-for="i in 3" :key="i" class="py-3 text-center">
-      <span
-        v-if="currentThrows[i - 1]"
-        class="font-bold"
-        :class="invalidTurn && 'text-error'"
+    <div
+      class="flex-1 grid p-3 text-5xl"
+      :class="{
+        'grid-cols-4': showScore,
+        'grid-cols-3': !showScore,
+      }"
+    >
+      <div v-for="i in 3" :key="i" class="py-3 text-center">
+        <span
+          v-if="currentThrows[i - 1]"
+          class="font-bold"
+          :class="invalidTurn && 'text-error'"
+        >
+          {{ currentThrows[i - 1].dartThrow.label }}
+        </span>
+        <span v-else-if="winningCombination?.[i - 1]" class="italic opacity-50">
+          {{ winningCombination[i - 1].label }}
+        </span>
+        <span v-else>·</span>
+      </div>
+
+      <UBadge
+        v-if="showScore"
+        class="font-bold justify-center mx-auto rounded-xl text-5xl w-30"
+        variant="subtle"
+        :color="invalidTurn ? 'error' : 'neutral'"
       >
-        {{ currentThrows[i - 1].dartThrow.label }}
-      </span>
-      <span v-else-if="winningCombination?.[i - 1]" class="italic opacity-50">
-        {{ winningCombination[i - 1].label }}
-      </span>
-      <span v-else>·</span>
+        {{ currentThrowsScore }}
+      </UBadge>
     </div>
 
-    <UBadge
-      v-if="showScore"
-      class="justify-center w-30 mx-auto text-5xl rounded-xl font-bold"
-      variant="subtle"
-      :color="invalidTurn ? 'error' : 'neutral'"
-    >
-      {{ currentThrowsScore }}
-    </UBadge>
+    <div class="flex flex-col gap-1.5 p-3">
+      <UButton
+        color="error"
+        icon="i-lucide-undo"
+        :hidden="!canUndo"
+        class="justify-center"
+        @click="emits('undo')"
+      >
+        Annuler
+      </UButton>
+      <UButton
+        color="success"
+        trailing-icon="i-lucide-check"
+        class="justify-center"
+        @click="emits('confirmThrows')"
+      >
+        Confirmer
+      </UButton>
+    </div>
 
     <div
-      class="absolute w-full h-full -translate-x-full bg-accented/75 -z-10 transition-transform opacity-0 duration-1500"
+      class="-translate-x-full -z-10 absolute bg-accented/75 duration-1500 h-full opacity-0 transition-transform w-full"
       :class="{ 'opacity-100 translate-x-0': timeout !== null }"
     />
   </div>

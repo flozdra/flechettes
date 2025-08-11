@@ -30,11 +30,11 @@ function highlightPlayer(player: string | null) {
 
 <template>
   <div class="max-h-[calc(100vh_-_82px)] overflow-y-auto">
-    <table class="w-full table-fixed">
-      <tbody class="border-accented border">
+    <table class="table-fixed w-full">
+      <tbody class="border border-accented">
         <template v-for="(turn, i) in throwStack.toReversed()" :key="i">
           <tr
-            class="text-center bg-accented font-semibold"
+            class="bg-accented font-semibold text-center"
             :class="
               highlightedPlayer === turn.player
                 ? 'bg-primary text-primary-900 border-primary/25'
@@ -44,12 +44,12 @@ function highlightPlayer(player: string | null) {
             "
             @click="highlightPlayer(turn.player)"
           >
-            <td :colspan="showTotal ? 4 : 3" class="text-center font-bold">
+            <td :colspan="showTotal ? 4 : 3" class="font-bold text-center">
               {{ turn.player }}
             </td>
           </tr>
           <tr
-            class="divide-x divide-accented text-center italic"
+            class="divide-accented divide-x italic text-center"
             :class="
               highlightedPlayer === turn.player
                 ? 'text-primary'
@@ -68,7 +68,7 @@ function highlightPlayer(player: string | null) {
             <td class="text-center">
               {{ turn.throws[2]?.dartThrow.id ?? "-" }}
             </td>
-            <td v-if="showTotal" class="font-bold bg-accented/25">
+            <td v-if="showTotal" class="bg-accented/25 font-bold">
               {{
                 turn.throws.reduce(
                   (sum, record) => sum + record.dartThrow.score,

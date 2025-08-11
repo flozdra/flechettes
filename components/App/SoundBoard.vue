@@ -15,7 +15,7 @@ const { soundBoard, keys, playAudio } = useSoundBoard();
         <p class="text-sm">
           Chaque son est associé à une touche du pavé numérique.
         </p>
-        <div v-for="key in keys" :key="key" class="flex items-center gap-1">
+        <div v-for="key in keys" :key="key" class="flex gap-1 items-center">
           <UInput
             v-model="soundBoard[key]"
             placeholder="Entrer l'URL d'un son"
