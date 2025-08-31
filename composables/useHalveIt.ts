@@ -9,7 +9,7 @@ export type HalveItState = {
 };
 
 // prettier-ignore
-const ROUND_LABELS = ["15", "16", "Double", "17", "18", "Triple", "19", "20", "Bull"] as const;
+const ROUND_LABELS = ["Numéro 15", "Numéro 16", "N'importe quel double", "Numéro 17", "Numéro 18", "N'importe quel triple", "Numéro 19", "Numéro 20", "Le bull"] as const;
 const ROUND_TARGETS: DartThrowId[][] = [
   ["S15", "D15", "T15"],
   ["S16", "D16", "T16"],
