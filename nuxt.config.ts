@@ -55,9 +55,15 @@ export default defineNuxtConfig({
           name: "twitter:image",
           content: "https://flechettes.flozdra.dev/og-image.png",
         },
+        {
+          name: "viewport",
+          content:
+            "width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+        },
       ],
     },
   },
+  colorMode: { preference: "dark" },
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
   modules: ["@nuxt/eslint", "@nuxt/fonts", "@nuxt/icon", "@nuxt/ui"],
