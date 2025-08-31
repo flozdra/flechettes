@@ -46,7 +46,7 @@ const rows = computed(() => {
       :data="rows"
       :columns="[
         { accessorKey: 'players', header: 'Joueurs' },
-        { accessorKey: 'round', header: 'Round' },
+        { accessorKey: 'round', header: 'Tour' },
         { accessorKey: 'winner', header: 'Gagnant' },
         { accessorKey: 'createdAt', header: 'Créé le' },
         { id: 'actions' },

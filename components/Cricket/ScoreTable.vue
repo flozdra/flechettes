@@ -9,7 +9,7 @@ defineProps<Props>();
 
 <template>
   <div
-    class="border border-accented pb-4 pt-2 px-4 relative rounded-lg space-y-3 text-center"
+    class="border border-accented pb-4 pt-2 px-4 relative rounded-lg space-y-3 text-center transition-colors"
     :class="
       isCurrentPlayer
         ? 'border bg-primary/10 border-primary/25 '
@@ -24,13 +24,13 @@ defineProps<Props>();
     </UBadge>
 
     <div class="flex font-bold justify-between rounded-lg text-lg">
+      <CricketScoreIcon label="Bull" :score="table.bull" />
       <CricketScoreIcon label="20" :score="table[20]" />
       <CricketScoreIcon label="19" :score="table[19]" />
       <CricketScoreIcon label="18" :score="table[18]" />
       <CricketScoreIcon label="17" :score="table[17]" />
       <CricketScoreIcon label="16" :score="table[16]" />
       <CricketScoreIcon label="15" :score="table[15]" />
-      <CricketScoreIcon label="Bull" :score="table.bull" />
     </div>
 
     <UProgress

@@ -3,6 +3,8 @@ const props = defineProps<{
   disabled?: boolean;
   hits: DartThrowRecord[];
   highlights?: DartThrowId[];
+  /** Only display cricket numbers */
+  onlyCricket?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -46,7 +48,7 @@ function getAttributes(dartThrow: DartThrow) {
       props.disabled
         ? "opacity-40"
         : "active:scale-105 active:-m-px active:border active:z-10",
-      ...(highlightEnabled ? [isHighlighted ? "ring-2" : "opacity-60"] : []),
+      ...(highlightEnabled ? [isHighlighted ? "ring-2" : "opacity-50"] : []),
     ],
     disabled: props.disabled,
     touchAction: "manipulation",
@@ -55,15 +57,24 @@ function getAttributes(dartThrow: DartThrow) {
   };
 }
 
-const SimpleDartThrows = Object.values(DartThrows)
-  .filter((dartThrow) => dartThrow.id.startsWith("S") && dartThrow.id !== "SB")
-  .reverse();
-const DoubleDartThrows = Object.values(DartThrows)
-  .filter((dartThrow) => dartThrow.id.startsWith("D") && dartThrow.id !== "DB")
-  .reverse();
-const TripleDartThrows = Object.values(DartThrows)
-  .filter((dartThrow) => dartThrow.id.startsWith("T"))
-  .reverse();
+const SimpleDartThrows = computed(() => {
+  return Object.values(DartThrows)
+    .filter(({ id }) => id.startsWith("S") && id !== "SB")
+    .filter(({ score }) => (props.onlyCricket ? score >= 15 : true))
+    .reverse();
+});
+const DoubleDartThrows = computed(() => {
+  return Object.values(DartThrows)
+    .filter(({ id }) => id.startsWith("D") && id !== "DB")
+    .filter(({ score }) => (props.onlyCricket ? score >= 30 : true))
+    .reverse();
+});
+const TripleDartThrows = computed(() => {
+  return Object.values(DartThrows)
+    .filter(({ id }) => id.startsWith("T"))
+    .filter(({ score }) => (props.onlyCricket ? score >= 45 : true))
+    .reverse();
+});
 </script>
 
 <template>

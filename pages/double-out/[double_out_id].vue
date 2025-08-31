@@ -39,9 +39,9 @@ defineShortcuts({
       @undo-turn="undo"
     />
 
-    <div class="lg:hidden p-1 space-y-1.5">
+    <div class="lg:hidden p-1 space-y-3">
       <DartRound :round="round" />
-      <div class="flex gap-1">
+      <div class="flex gap-1 overflow-x-auto">
         <DoubleOutPlayerScoreMobile
           v-for="(player, i) in players"
           :key="i"
@@ -53,7 +53,7 @@ defineShortcuts({
       </div>
 
       <DartBoardMobile
-        class="min-h-[calc(100vh_-_340px)]"
+        class="min-h-[calc(100vh_-_348px)]"
         :disabled="waitingForConfirmation"
         :hits="currentThrows"
         :highlights="currentPlayerHighlights"
@@ -89,7 +89,7 @@ defineShortcuts({
         <SplitterPanel class="col-span-2 flex-1 p-3 space-y-3">
           <DartBoardMobile
             v-if="settings.alwaysShowDartMobile"
-            class="h-[calc(100vh_-_192px)]"
+            class="min-h-[calc(100vh_-_192px)]"
             :disabled="waitingForConfirmation"
             :hits="currentThrows"
             :highlights="currentPlayerHighlights"
@@ -97,7 +97,7 @@ defineShortcuts({
           />
           <DartBoard
             v-else
-            class="h-[calc(100vh_-_192px)]"
+            class="max-h-[calc(100vh_-_192px)]"
             :disabled="waitingForConfirmation"
             :hits="currentThrows"
             :highlights="currentPlayerHighlights"
