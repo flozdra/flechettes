@@ -50,32 +50,36 @@ watch(
     class="border border-muted duration-500 flex overflow-hidden relative rounded-2xl transition-colors whitespace-nowrap"
   >
     <div
-      class="flex-1 grid p-3 text-5xl"
+      class="flex-1 grid p-3 text-4xl"
       :class="{
         'grid-cols-4': showScore,
         'grid-cols-3': !showScore,
       }"
     >
-      <div v-for="i in 3" :key="i" class="py-3 text-center">
+      <div
+        v-for="i in 3"
+        :key="i"
+        class="flex items-center justify-center py-3"
+      >
         <span
           v-if="currentThrows[i - 1]"
           class="font-bold"
           :class="invalidTurn && 'text-error'"
         >
-          {{ currentThrows[i - 1].dartThrow.label }}
+          {{ currentThrows[i - 1].dartThrow.id }}
         </span>
         <span
           v-else-if="winningCombination?.[i - 1 - currentThrows.length]"
           class="italic opacity-50"
         >
-          {{ winningCombination[i - 1 - currentThrows.length].label }}
+          {{ winningCombination[i - 1 - currentThrows.length].id }}
         </span>
         <span v-else>·</span>
       </div>
 
       <UBadge
         v-if="showScore"
-        class="font-bold justify-center mx-auto rounded-xl text-5xl w-30"
+        class="font-bold justify-center mx-auto px-6 rounded-xl text-4xl"
         variant="subtle"
         :color="invalidTurn ? 'error' : 'neutral'"
       >

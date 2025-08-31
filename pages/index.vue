@@ -23,7 +23,7 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-4xl mx-auto p-3">
     <UTabs v-model="tab" :items="items">
       <template #double-out>
         <div class="space-y-3">

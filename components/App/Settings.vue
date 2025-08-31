@@ -5,10 +5,8 @@ const knownPlayers = useLocalStorage<string[]>("known-players", []);
 const settings = useSettings();
 
 const shortcuts = [
-  { key: "Esc", action: "Revenir au tour précédent" },
   { key: "⌫", action: "Annuler la dernière flèche" },
   { key: "Entrée", action: "Confirmer les flèches" },
-  { key: "0 – 9", action: "SoundBoard" },
 ];
 </script>
 
@@ -78,7 +76,7 @@ const shortcuts = [
 
         <div>
           <p class="font-semibold mb-3 text-highlighted">Raccourcis clavier</p>
-          <div class="gap-2 grid grid-cols-2">
+          <div class="flex flex-col gap-2">
             <template v-for="shortcut in shortcuts" :key="shortcut.key">
               <div class="flex gap-1.5 items-center">
                 <UKbd class="min-w-12">{{ shortcut.key }}</UKbd>

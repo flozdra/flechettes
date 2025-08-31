@@ -20,16 +20,13 @@ export type DartThrow = {
   id: DartThrowId;
   color: DartColors;
   score: number;
-  label: string;
 };
 
 const blackOrRedNumbers = new Set<DartNumbers>([
   20, 18, 13, 10, 2, 3, 7, 8, 14, 12,
 ]);
-const times = " × ";
 
 export const DartThrows: Record<DartThrowId, DartThrow> = {
-  OUT: { id: "OUT", color: DartColors.Black, score: 0, label: "OUT" },
   ...Array.from({ length: 20 }, (_, i) => i + 1).reduce((acc, score) => {
     const simpleId: DartThrowId = `S${score as DartNumbers}`;
     const doubleId: DartThrowId = `D${score as DartNumbers}`;
@@ -39,33 +36,29 @@ export const DartThrows: Record<DartThrowId, DartThrow> = {
       id: simpleId,
       color: isBlackOrRed ? DartColors.Black : DartColors.Beige,
       score,
-      label: String(score),
     };
     acc[doubleId] = {
       id: doubleId,
       color: isBlackOrRed ? DartColors.Red : DartColors.Green,
       score: score * 2,
-      label: `${score}${times}2`,
     };
     acc[tripleId] = {
       id: tripleId,
       color: isBlackOrRed ? DartColors.Red : DartColors.Green,
       score: score * 3,
-      label: `${score}${times}3`,
     };
     return acc;
   }, {} as Record<Exclude<DartThrowId, "OUT" | "SB" | "DB">, DartThrow>),
+  OUT: { id: "OUT", color: DartColors.Black, score: 0 },
   SB: {
     id: "SB",
     color: DartColors.Green,
     score: 25,
-    label: "Bull",
   },
   DB: {
     id: "DB",
     color: DartColors.Red,
     score: 50,
-    label: `Bull${times}2`,
   },
 };
 
