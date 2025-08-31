@@ -22,7 +22,7 @@ watch(
     <Transition :name="transition" mode="out-in">
       <div
         :key="displayedRound"
-        class="font-bold lg:text-4xl px-4 text-center text-xl"
+        class="font-bold lg:text-3xl px-4 text-center text-xl"
       >
         {{ customLabel || `Tour ${displayedRound}` }}
       </div>

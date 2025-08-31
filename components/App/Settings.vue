@@ -27,6 +27,10 @@ const shortcuts = [
           <p class="font-semibold mb-3 text-highlighted">Préférences</p>
           <div class="space-y-3">
             <USwitch
+              v-model="settings.alwaysShowDartMobile"
+              label="Toujours afficher la cible sous forme de tableau"
+            />
+            <USwitch
               v-model="settings.autoConfirmThrows"
               label="Confirmation automatique des lancés"
             />

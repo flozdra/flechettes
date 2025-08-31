@@ -9,46 +9,25 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{ undoTurn: []; revenge: [] }>();
 
-const soundEffects = useSoundEffects();
-
 function fire(particleRatio: number, opts: confetti.Options) {
   confetti({
-    origin: { y: 0.8 },
+    origin: { y: 0.6 },
     ...opts,
     particleCount: Math.floor(200 * particleRatio),
   });
 }
-const isPlaying = ref(false);
 
 function triggerConfetti() {
-  if (props.winner === null || isPlaying.value) return;
-  isPlaying.value = true;
-  soundEffects.orchestralWin.play();
+  if (props.winner === null) return;
 
   fire(0.25, { spread: 26, startVelocity: 55 });
   fire(0.2, { spread: 60 });
   fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
   fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-  fire(0.1, { spread: 120, startVelocity: 45 });
 
-  setTimeout(() => fire(0.25, { spread: 70 }), 500);
-  setTimeout(() => fire(0.25, { spread: 70 }), 620);
-  setTimeout(() => fire(0.25, { spread: 70 }), 740);
-  setTimeout(() => fire(0.65, { spread: 140, startVelocity: 55 }), 860);
-
-  setTimeout(() => fire(0.25, { spread: 70 }), 1500);
-  setTimeout(() => fire(0.25, { spread: 70 }), 1620);
-  setTimeout(() => fire(0.25, { spread: 70 }), 1740);
-  setTimeout(() => fire(0.65, { spread: 140, startVelocity: 55 }), 1860);
-
-  setTimeout(() => fire(0.25, { spread: 70 }), 2500);
-  setTimeout(() => fire(0.25, { spread: 70 }), 2620);
-  setTimeout(() => fire(0.25, { spread: 70 }), 2740);
-  setTimeout(() => fire(0.65, { spread: 140, startVelocity: 55 }), 2860);
-
-  setTimeout(() => fire(0.85, { spread: 150 }), 3500);
-  setTimeout(() => fire(0.75, { spread: 200, decay: 0.92 }), 3920);
-  setTimeout(() => (isPlaying.value = false), 4000);
+  setTimeout(() => fire(0.25, { spread: 70 }), 200);
+  setTimeout(() => fire(0.25, { spread: 70 }), 360);
+  setTimeout(() => fire(0.65, { spread: 140, startVelocity: 55 }), 560);
 }
 
 watch(() => props.winner, triggerConfetti);
@@ -61,17 +40,18 @@ defineShortcuts({
 <template>
   <div
     v-if="winner"
-    class="absolute backdrop-blur-lg bg-default/80 flex flex-col font-bold inset-0 items-center justify-center p-12 space-y-12 z-10"
+    class="absolute backdrop-blur-lg bg-default/80 flex flex-col font-bold inset-0 items-center justify-center p-8 z-10"
   >
-    <div class="text-8xl text-center">🏆 {{ winner.name }} a gagné ! 🏆</div>
-
-    <div class="leading-relaxed max-w-sm mx-auto text-4xl">
-      <div v-for="(player, i) in rankings" :key="i" class="flex">
+    <div class="lg:text-6xl mb-3 text-4xl text-center">
+      <span class="lg:text-6xl text-5xl">🥇</span> {{ winner.name }}
+    </div>
+    <div class="leading-relaxed lg:text-4xl max-w-sm mb-6 mx-auto text-2xl">
+      <div v-for="(player, i) in rankings.slice(1)" :key="i" class="flex">
         <div
-          class="flex items-center min-w-16 relative"
-          :class="i > 2 && 'text-3xl ml-2'"
+          class="flex items-center lg:min-w-16 min-w-12 relative"
+          :class="i > 1 && 'text-2xl pl-2'"
         >
-          {{ i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1 }}
+          {{ i === 0 ? "🥈" : i === 1 ? "🥉" : i + 2 }}
         </div>
         {{ player.name }}
       </div>

@@ -1,11 +1,13 @@
 import { useLocalStorage } from "@vueuse/core";
 
 interface Settings {
+  alwaysShowDartMobile: boolean;
   autoConfirmThrows: boolean;
   highlightNumbers: boolean;
 }
 
 const defaultSettings: Settings = {
+  alwaysShowDartMobile: false,
   autoConfirmThrows: true,
   highlightNumbers: true,
 };
