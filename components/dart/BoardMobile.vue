@@ -18,7 +18,7 @@ const soundEffects = useSoundEffects();
  * Emit a new hit event with dummy coordinates (0,0) since this is not a dartboard
  */
 function emitNewHit(dartThrow: DartThrow) {
-  const coordinates = { x: 0, y: 0 };
+  const coordinates = { x: -100, y: -100 };
   emit("hit", dartThrow, coordinates);
   soundEffects.hitDart.play();
 }
@@ -39,8 +39,8 @@ function getAttributes(dartThrow: DartThrow) {
     dartThrow.id === "DB" || dartThrow.id.startsWith("T")
       ? DartColors.Red
       : dartThrow.id === "SB" || dartThrow.id.startsWith("D")
-      ? DartColors.Green
-      : DartColors.Black;
+        ? DartColors.Green
+        : DartColors.Black;
 
   return {
     class: [

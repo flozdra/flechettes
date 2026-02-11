@@ -12,7 +12,7 @@ export type ThrowCoordinates = { x: number; y: number };
 export enum DartColors {
   Beige = "#FAE0B7",
   Black = "#121415",
-  Gray = "#A6AFB5",
+  Gray = "#B6B4B2",
   Green = "#15951F",
   Red = "#FD201D",
 }
@@ -27,28 +27,31 @@ const blackOrRedNumbers = new Set<DartNumbers>([
 ]);
 
 export const DartThrows: Record<DartThrowId, DartThrow> = {
-  ...Array.from({ length: 20 }, (_, i) => i + 1).reduce((acc, score) => {
-    const simpleId: DartThrowId = `S${score as DartNumbers}`;
-    const doubleId: DartThrowId = `D${score as DartNumbers}`;
-    const tripleId: DartThrowId = `T${score as DartNumbers}`;
-    const isBlackOrRed = blackOrRedNumbers.has(score as DartNumbers);
-    acc[simpleId] = {
-      id: simpleId,
-      color: isBlackOrRed ? DartColors.Black : DartColors.Beige,
-      score,
-    };
-    acc[doubleId] = {
-      id: doubleId,
-      color: isBlackOrRed ? DartColors.Red : DartColors.Green,
-      score: score * 2,
-    };
-    acc[tripleId] = {
-      id: tripleId,
-      color: isBlackOrRed ? DartColors.Red : DartColors.Green,
-      score: score * 3,
-    };
-    return acc;
-  }, {} as Record<Exclude<DartThrowId, "OUT" | "SB" | "DB">, DartThrow>),
+  ...Array.from({ length: 20 }, (_, i) => i + 1).reduce(
+    (acc, score) => {
+      const simpleId: DartThrowId = `S${score as DartNumbers}`;
+      const doubleId: DartThrowId = `D${score as DartNumbers}`;
+      const tripleId: DartThrowId = `T${score as DartNumbers}`;
+      const isBlackOrRed = blackOrRedNumbers.has(score as DartNumbers);
+      acc[simpleId] = {
+        id: simpleId,
+        color: isBlackOrRed ? DartColors.Black : DartColors.Beige,
+        score,
+      };
+      acc[doubleId] = {
+        id: doubleId,
+        color: isBlackOrRed ? DartColors.Red : DartColors.Green,
+        score: score * 2,
+      };
+      acc[tripleId] = {
+        id: tripleId,
+        color: isBlackOrRed ? DartColors.Red : DartColors.Green,
+        score: score * 3,
+      };
+      return acc;
+    },
+    {} as Record<Exclude<DartThrowId, "OUT" | "SB" | "DB">, DartThrow>,
+  ),
   OUT: { id: "OUT", color: DartColors.Black, score: 0 },
   SB: {
     id: "SB",
