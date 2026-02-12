@@ -65,8 +65,9 @@ export default defineNuxtConfig({
   },
   colorMode: { preference: "dark" },
   compatibilityDate: "2025-05-15",
-  devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxt/fonts", "@nuxt/icon", "@nuxt/ui"],
+  devtools: { enabled: false },
+  eslint: {},
+  modules: ["@nuxt/eslint", "@nuxt/fonts", "@nuxt/ui"],
   css: ["~/assets/css/main.css"],
   ssr: false,
 });
