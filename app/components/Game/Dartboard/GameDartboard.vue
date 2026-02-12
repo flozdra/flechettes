@@ -58,7 +58,7 @@ function drawHitMarker(dartThrowRecord: DartThrowRecord) {
   const color = dartThrowRecord.dartThrow.color;
   // Override the color if it's beige or black
   const strokeColor = [DartColors.Beige, DartColors.Black].includes(color)
-    ? "#494E51"
+    ? DartColors.Black
     : color;
 
   const hitMarker = document.createElementNS("http://www.w3.org/2000/svg", "g");

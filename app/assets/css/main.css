@@ -4,3 +4,48 @@
 @theme {
   --font-sans: "Quantico", sans-serif;
 }
+
+:root {
+  --ui-bg: var(--color-woodsmoke-50);
+}
+
+.dark {
+  --ui-bg: var(--color-woodsmoke-900);
+}
+
+@theme static {
+  --color-green-50: #f0fdf0;
+  --color-green-100: #e1ffdf;
+  --color-green-200: #8cfa89;
+  --color-green-300: #72e070;
+  --color-green-400: #58c658;
+  --color-green-500: #3cad3e;
+  --color-green-600: #15951f;
+  --color-green-700: #007c10;
+  --color-green-800: #005b09;
+  --color-green-900: #003a04;
+  --color-green-950: #002001;
+
+  --color-red-100: #ffdddd;
+  --color-red-200: #ffc2c1;
+  --color-red-300: #ff9695;
+  --color-red-400: #ff5b59;
+  --color-red-500: #ff2825;
+  --color-red-600: #fd201d;
+  --color-red-700: #d50300;
+  --color-red-800: #b00604;
+  --color-red-900: #910d0b;
+  --color-red-950: #500100;
+
+  --color-woodsmoke-50: #fafafa;
+  --color-woodsmoke-100: #f4f5f5;
+  --color-woodsmoke-200: #e4e6e7;
+  --color-woodsmoke-300: #d3d7d9;
+  --color-woodsmoke-400: #a0a7ab;
+  --color-woodsmoke-500: #70777b;
+  --color-woodsmoke-600: #51585c;
+  --color-woodsmoke-700: #3e4447;
+  --color-woodsmoke-800: #27292a;
+  --color-woodsmoke-900: #121415;
+  --color-woodsmoke-950: #090a0b;
+}
