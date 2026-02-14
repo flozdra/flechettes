@@ -11,7 +11,7 @@ const throwStack = computed(() => {
   const stack: { player: string; throws: DartThrowRecord[] }[] = [];
   for (const [i, turnThrows] of props.throws.entries()) {
     const playerIndex = i % props.playerNames.length;
-    const player = props.playerNames[playerIndex]!;
+    const player = props.playerNames[playerIndex];
     stack.push({ player, throws: turnThrows });
   }
   return stack;

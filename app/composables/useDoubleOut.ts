@@ -14,7 +14,7 @@ export type DoubleOutState = {
 export function createNewDoubleOut(
   initialScore: 301 | 501,
   endWithDouble: boolean,
-  players: string[]
+  players: string[],
 ) {
   const gameId = `double-out-${Date.now()}`;
   useLocalStorage<DoubleOutState>(gameId, {
@@ -49,7 +49,7 @@ export function useDoubleOut(gameId: string) {
   // Convert from version 1 to version 2 if needed
   if (gameState.value.version === 1) {
     gameState.value = convertDoubleOutFromV1ToV2(
-      gameState.value as unknown as DoubleOutStateV1
+      gameState.value as unknown as DoubleOutStateV1,
     );
   }
 
@@ -122,7 +122,7 @@ export function useDoubleOut(gameId: string) {
 
   /** Players sorted by score */
   const ranking = computed(() =>
-    players.value.toSorted((p1, p2) => p1.score - p2.score)
+    players.value.toSorted((p1, p2) => p1.score - p2.score),
   );
 
   /** Current winner if exists */
@@ -163,7 +163,7 @@ export function useDoubleOut(gameId: string) {
     return getBestCombination(
       currentPlayerScore,
       currentThrows.value.map((t) => t.dartThrow),
-      gameState.value.endWithDouble
+      gameState.value.endWithDouble,
     );
   });
 
@@ -194,7 +194,7 @@ export function useDoubleOut(gameId: string) {
     createNewDoubleOut(
       gameState.value.initialScore,
       gameState.value.endWithDouble,
-      gameState.value.players
+      gameState.value.players,
     );
   }
 
@@ -239,7 +239,7 @@ type DoubleOutStateV1 = {
  * Convert a Double Out game from version 1 to version 2.
  */
 export function convertDoubleOutFromV1ToV2(
-  game: DoubleOutStateV1
+  game: DoubleOutStateV1,
 ): DoubleOutState {
   const throws: DartThrowRecord[][] = [];
   for (let i = 0; i < game.round; i++) {

@@ -69,18 +69,18 @@ export function useHalveIt(gameId: string) {
 
     for (let i = 0; i <= turn.value; i++) {
       const roundIndex = Math.floor(i / gameState.value.players.length);
-      const turnScore = gameState.value.throws[i]!.filter((t) =>
-        ROUND_TARGETS[roundIndex]!.includes(t.dartThrow.id),
-      ).reduce((sum, record) => sum + record.dartThrow.score, 0);
+      const turnScore = gameState.value.throws[i]
+        .filter((t) => ROUND_TARGETS[roundIndex].includes(t.dartThrow.id))
+        .reduce((sum, record) => sum + record.dartThrow.score, 0);
       const playerIndex = i % gameState.value.players.length;
 
       // If the player scored, add the score, otherwise halve it
       if (turnScore > 0) {
-        playerScores[playerIndex]!.score += turnScore;
+        playerScores[playerIndex].score += turnScore;
       } else if (i < turn.value) {
         // Don't halve if it's the current turn
-        playerScores[playerIndex]!.score = Math.ceil(
-          playerScores[playerIndex]!.score / 2,
+        playerScores[playerIndex].score = Math.ceil(
+          playerScores[playerIndex].score / 2,
         );
       }
     }
@@ -95,7 +95,7 @@ export function useHalveIt(gameId: string) {
 
   /** Current player's throws */
   const currentThrows = computed<DartThrowRecord[]>(() => {
-    return gameState.value.throws[turn.value]!;
+    return gameState.value.throws[turn.value];
   });
 
   /** Players sorted by score */
@@ -106,7 +106,7 @@ export function useHalveIt(gameId: string) {
   /** Current winner if the game is over */
   const winner = computed(() => {
     if (round.value > ROUND_TARGETS.length) {
-      return ranking.value[0]!;
+      return ranking.value[0];
     }
     return null;
   });
@@ -124,9 +124,9 @@ export function useHalveIt(gameId: string) {
 
     // Keep reactivity by creating a new array
     gameState.value.throws[turn.value] = [
-      ...gameState.value.throws[turn.value]!,
+      ...gameState.value.throws[turn.value],
       {
-        id: turn.value * 3 + gameState.value.throws[turn.value]!.length,
+        id: turn.value * 3 + gameState.value.throws[turn.value].length,
         dartThrow,
         coordinates,
       },
@@ -145,7 +145,7 @@ export function useHalveIt(gameId: string) {
       // Remove the last throw
       gameState.value.throws[turn.value] = gameState.value.throws[
         turn.value
-      ]!.slice(0, -1);
+      ].slice(0, -1);
     } else if (gameState.value.throws.length > 1) {
       // Back to the previous turn
       gameState.value.throws = gameState.value.throws.slice(0, -1);

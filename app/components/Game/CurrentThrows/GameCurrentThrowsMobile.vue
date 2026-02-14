@@ -59,13 +59,13 @@ watch(
           class="font-bold"
           :class="invalidTurn && 'text-error'"
         >
-          {{ currentThrows[i - 1]!.dartThrow.id }}
+          {{ currentThrows[i - 1].dartThrow.id }}
         </span>
         <span
           v-else-if="winningCombination?.[i - 1 - currentThrows.length]"
           class="italic opacity-50"
         >
-          {{ winningCombination[i - 1 - currentThrows.length]!.id }}
+          {{ winningCombination[i - 1 - currentThrows.length].id }}
         </span>
         <span v-else>·</span>
       </div>
