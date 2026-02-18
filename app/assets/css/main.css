@@ -6,11 +6,15 @@
 }
 
 :root {
-  --ui-bg: var(--color-woodsmoke-50);
+  --ui-bg: var(--color-woodsmoke-100);
+  --ui-text: var(--color-neutral-900);
+  --ui-text-muted: var(--color-neutral-700);
 }
 
 .dark {
   --ui-bg: var(--color-woodsmoke-900);
+  --ui-text: var(--color-neutral-50);
+  --ui-text-muted: var(--color-neutral-300);
 }
 
 @theme static {

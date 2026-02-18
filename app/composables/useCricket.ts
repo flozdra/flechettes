@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@vueuse/core";
 
 export type CricketState = {
-  id: string;
+  id: `cricket-${number}`;
   createdAt: number;
   players: string[];
   throws: DartThrowRecord[][];
@@ -10,7 +10,7 @@ export type CricketState = {
 
 /** Create a new Cricket game and navigate to it */
 export function createNewCricket(players: string[]) {
-  const gameId = `cricket-${Date.now()}`;
+  const gameId = `cricket-${Date.now()}` as const;
   useLocalStorage<CricketState>(gameId, {
     id: gameId,
     createdAt: Date.now(),
@@ -18,7 +18,7 @@ export function createNewCricket(players: string[]) {
     throws: [[]],
     version: 2,
   });
-  navigateTo(`/cricket/${gameId}`);
+  navigateTo(`/${gameId}`);
 }
 
 // prettier-ignore
@@ -224,7 +224,7 @@ export function convertCricketFromV1ToV2(game: CricketStateV1): CricketState {
     }
   }
   return {
-    id: game.id,
+    id: game.id as CricketState["id"],
     createdAt: game.createdAt,
     players: game.players.map(({ name }) => name),
     throws,

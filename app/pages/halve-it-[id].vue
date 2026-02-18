@@ -20,7 +20,7 @@ const {
   canUndo,
   undo,
   revenge,
-} = useHalveIt(route.params.halve_it_id as string);
+} = useHalveIt(`halve-it-${route.params.id}`);
 
 defineShortcuts({
   enter: () => confirmThrows(),

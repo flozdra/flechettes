@@ -5,10 +5,10 @@ import { fr } from "@nuxt/ui/locale";
 <template>
   <UApp :locale="fr">
     <div class="h-screen">
-      <header class="border-b border-muted flex items-center p-3">
-        <NuxtLink to="/" class="gap-2 inline-flex items-center text-2xl">
-          <AppLogo class="fill-current size-8" />
-          <span class="font-extrabold">Fléchettes</span>
+      <header class="border-b border-muted flex h-16 items-center p-3">
+        <NuxtLink to="/" class="gap-2 inline-flex items-center">
+          <AppLogo class="-my-1 fill-current h-10" />
+          <span class="font-extrabold text-3xl">Fléchettes</span>
         </NuxtLink>
         <div class="grow" />
         <UColorModeButton />

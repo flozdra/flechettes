@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@vueuse/core";
 
 export type HalveItState = {
-  id: string;
+  id: `halve-it-${number}`;
   createdAt: number;
   players: string[];
   throws: DartThrowRecord[][];
@@ -26,7 +26,7 @@ const ROUND_TARGETS: DartThrowId[][] = [
 
 /** Create a new Halve It game and navigate to it */
 export function createNewHalveIt(players: string[]) {
-  const gameId = `halve-it-${Date.now()}`;
+  const gameId = `halve-it-${Date.now()}` as const;
   useLocalStorage<HalveItState>(gameId, {
     id: gameId,
     createdAt: Date.now(),
@@ -34,7 +34,7 @@ export function createNewHalveIt(players: string[]) {
     throws: [[]],
     version: 2,
   });
-  navigateTo(`/halve-it/${gameId}`);
+  navigateTo(`/${gameId}`);
 }
 
 /**

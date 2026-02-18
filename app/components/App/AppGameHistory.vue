@@ -1,11 +1,20 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-const games = ref<DoubleOutGame[]>([]);
+const games = ref<(DoubleOutGame | CricketGame | HalveItGame)[]>([]);
 
+// Load games from localStorage
 for (const key in localStorage) {
   if (key.startsWith("double-out")) {
     const game = reactive(useDoubleOut(key));
+    games.value.push(game);
+  }
+  if (key.startsWith("cricket")) {
+    const game = reactive(useCricket(key));
+    games.value.push(game);
+  }
+  if (key.startsWith("halve-it")) {
+    const game = reactive(useHalveIt(key));
     games.value.push(game);
   }
 }
@@ -41,30 +50,48 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-1.5">
+    <p class="font-bold text-2xl">Dernières parties</p>
+
     <UTable
       :data="rows"
       :columns="[
-        { accessorKey: 'initialScore', header: 'Type' },
+        { accessorKey: 'state', header: 'Mode de jeu' },
         { accessorKey: 'players', header: 'Joueurs' },
         { accessorKey: 'round', header: 'Tour' },
         { accessorKey: 'winner', header: 'Gagnant' },
         { accessorKey: 'createdAt', header: 'Créé le' },
         { id: 'actions' },
       ]"
-      @select="(_, row) => navigateTo('/double-out/' + row.original.state.id)"
+      @select="(_, row) => navigateTo(row.original.state.id)"
     >
-      <template #createdAt-cell="{ cell }">
-        <span>{{ formatDate(cell.row.original.state.createdAt) }}</span>
-      </template>
-      <template #initialScore-cell="{ cell }">
+      <template #state-cell="{ row }">
         <UBadge
+          v-if="row.original.state.id.startsWith('double-out')"
           :color="
-            cell.row.original.state.initialScore === 301 ? 'primary' : 'warning'
+            (row.original.state as DoubleOutState).initialScore === 301
+              ? 'primary'
+              : 'warning'
           "
         >
-          {{ cell.row.original.state.initialScore }}
+          Double Out · {{ (row.original.state as DoubleOutState).initialScore }}
         </UBadge>
+        <UBadge
+          v-else-if="row.original.state.id.startsWith('cricket')"
+          color="info"
+        >
+          Cricket
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.state.id.startsWith('halve-it')"
+          color="neutral"
+          size="md"
+        >
+          Halve It
+        </UBadge>
+      </template>
+      <template #createdAt-cell="{ cell }">
+        <span>{{ formatDate(cell.row.original.state.createdAt) }}</span>
       </template>
       <template #round-cell="{ cell }">
         {{ cell.row.original.round }}

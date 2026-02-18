@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@vueuse/core";
 
 export type DoubleOutState = {
-  id: string;
+  id: `double-out-${number}`;
   createdAt: number;
   initialScore: 301 | 501;
   endWithDouble: boolean;
@@ -16,7 +16,7 @@ export function createNewDoubleOut(
   endWithDouble: boolean,
   players: string[],
 ) {
-  const gameId = `double-out-${Date.now()}`;
+  const gameId = `double-out-${Date.now()}` as const;
   useLocalStorage<DoubleOutState>(gameId, {
     id: gameId,
     createdAt: Date.now(),
@@ -26,7 +26,7 @@ export function createNewDoubleOut(
     throws: [[]],
     version: 2,
   });
-  navigateTo(`/double-out/${gameId}`);
+  navigateTo(`/${gameId}`);
 }
 
 /** Compute the total score for a turn */
@@ -250,7 +250,7 @@ export function convertDoubleOutFromV1ToV2(
     }
   }
   return {
-    id: game.id,
+    id: game.id as DoubleOutState["id"],
     createdAt: game.createdAt,
     initialScore: game.score,
     endWithDouble: false,

@@ -15,13 +15,7 @@ function handleError(clearStorage?: boolean) {
   <div
     class="flex flex-col gap-3 h-screen items-center justify-center p-6 text-center text-xl"
   >
-    <template v-if="props.error.statusCode < 500">
-      <AppLogo class="fill-current size-12" />
-      <p class="font-extrabold">{{ error.message }}</p>
-      <UButton @click="handleError(false)">Retour à la page d'accueil</UButton>
-    </template>
-
-    <template v-if="props.error.statusCode === 500">
+    <template v-if="props.error.status === 500">
       <AppLogo class="fill-current size-12" />
       <p class="font-extrabold">Une erreur est survenue</p>
       <p class="text-sm">{{ props.error }}</p>
@@ -45,6 +39,12 @@ function handleError(clearStorage?: boolean) {
         to="https://github.com/flozdra/flechettes/issues/new"
         >Signaler sur GitHub</UButton
       >
+    </template>
+
+    <template v-else>
+      <AppLogo class="fill-current size-12" />
+      <p class="font-extrabold">{{ props.error.message }}</p>
+      <UButton @click="handleError(false)">Retour à la page d'accueil</UButton>
     </template>
   </div>
 </template>

@@ -11,10 +11,10 @@ export type DartThrowId =
 export type ThrowCoordinates = { x: number; y: number };
 export enum DartColors {
   Beige = "#fae0b7",
-  Black = "#121415",
-  Gray = "#a0a7ab",
-  Green = "#15951f",
-  Red = "#fd201d",
+  Black = "#121415", // --color-woodsmoke-900
+  Gray = "#a0a7ab", // --color-woodsmoke-400
+  Green = "#15951f", // --color-green-600
+  Red = "#fd201d", // --color-red-600
 }
 export type DartThrow = {
   id: DartThrowId;

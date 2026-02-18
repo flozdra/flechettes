@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from "reka-ui";
-import { CricketScoreTable } from "#components";
 
 const route = useRoute();
 const settings = useSettings();
@@ -12,15 +11,17 @@ const {
   round,
   ranking,
   currentThrows,
+  invalidTurn,
   winner,
   currentPlayerHighlights,
+  winningCombination,
   recordThrow,
   waitingForConfirmation,
   confirmThrows,
   canUndo,
   undo,
   revenge,
-} = useCricket(route.params.cricket_id as string);
+} = useDoubleOut(`double-out-${route.params.id}`);
 
 defineShortcuts({
   enter: () => confirmThrows(),
@@ -31,7 +32,7 @@ defineShortcuts({
 <template>
   <div>
     <GameWinnerOverlay
-      to="/?tab=1"
+      to="/"
       :winner="winner"
       :rankings="ranking"
       @revenge="revenge"
@@ -41,34 +42,37 @@ defineShortcuts({
     <div class="lg:hidden p-1 space-y-3">
       <GameRound :round="round" />
       <div class="flex gap-1 overflow-x-auto">
-        <CricketScoreTableMobile
+        <DoubleOutPlayerScoreMobile
           v-for="(player, i) in players"
           :key="i"
-          :player-name="player.name"
+          :player="player"
           :is-current-player="currentPlayer === i"
-          :table="player.table"
+          :invalid-turn="invalidTurn"
+          :initial-score="state.initialScore"
         />
       </div>
 
       <GameDartboardMobile
-        class="min-h-[calc(100vh-520px)]"
+        class="min-h-[calc(100vh-348px)]"
         :disabled="waitingForConfirmation"
         :hits="currentThrows"
         :highlights="currentPlayerHighlights"
-        only-cricket
         @hit="recordThrow"
       />
 
       <GameCurrentThrowsMobile
         :can-undo="canUndo"
         :current-throws="currentThrows"
+        :invalid-turn="invalidTurn"
+        show-score
+        :winning-combination="winningCombination"
         @undo="undo"
         @confirm-throws="confirmThrows"
       />
     </div>
 
     <div class="hidden lg:block">
-      <SplitterGroup auto-save-id="cricket-layout" direction="horizontal">
+      <SplitterGroup auto-save-id="double-out-layout" direction="horizontal">
         <SplitterPanel
           class="max-h-full overflow-y-auto p-3 w-40"
           :default-size="20"
@@ -76,6 +80,7 @@ defineShortcuts({
           <GameThrowStack
             :player-names="state.players"
             :throws="state.throws"
+            show-total
           />
         </SplitterPanel>
 
@@ -88,7 +93,6 @@ defineShortcuts({
             :disabled="waitingForConfirmation"
             :hits="currentThrows"
             :highlights="currentPlayerHighlights"
-            only-cricket
             @hit="recordThrow"
           />
           <GameDartboard
@@ -103,6 +107,9 @@ defineShortcuts({
           <GameCurrentThrows
             :can-undo="canUndo"
             :current-throws="currentThrows"
+            :invalid-turn="invalidTurn"
+            show-score
+            :winning-combination="winningCombination"
             @undo="undo"
             @confirm-throws="confirmThrows"
           />
@@ -115,12 +122,13 @@ defineShortcuts({
           :default-size="25"
         >
           <GameRound :round="round" />
-          <CricketScoreTable
+          <DoubleOutPlayerScore
             v-for="(player, i) in players"
             :key="i"
-            :player-name="player.name"
+            :player="player"
             :is-current-player="currentPlayer === i"
-            :table="player.table"
+            :invalid-turn="invalidTurn"
+            :initial-score="state.initialScore"
           />
         </SplitterPanel>
       </SplitterGroup>
