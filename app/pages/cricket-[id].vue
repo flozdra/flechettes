@@ -50,8 +50,8 @@ defineShortcuts({
         />
       </div>
 
-      <GameDartboardMobile
-        class="min-h-[calc(100vh-520px)]"
+      <GameDartboardTable
+        class="min-h-[calc(100vh-488px)]"
         :disabled="waitingForConfirmation"
         :hits="currentThrows"
         :highlights="currentPlayerHighlights"
@@ -82,8 +82,8 @@ defineShortcuts({
         <SplitterResizeHandle class="bg-accented w-px" />
 
         <SplitterPanel class="col-span-2 flex-1 p-3 space-y-3">
-          <GameDartboardMobile
-            v-if="settings.alwaysShowDartMobile"
+          <GameDartboardTable
+            v-if="settings.dartboard === 'table'"
             class="min-h-[calc(100vh-192px)]"
             :disabled="waitingForConfirmation"
             :hits="currentThrows"

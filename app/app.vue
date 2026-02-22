@@ -1,16 +1,44 @@
 <script setup lang="ts">
 import { fr } from "@nuxt/ui/locale";
+import type { NavigationMenuItem } from "@nuxt/ui";
+
+const route = useRoute();
+
+const items = computed<NavigationMenuItem[]>(() => [
+  {
+    label: "Jeux",
+    to: "/",
+    active: route.name === "index",
+  },
+  {
+    label: "Entrainement",
+    to: "/training",
+    active: route.name === "training",
+  },
+]);
 </script>
 
 <template>
   <UApp :locale="fr">
-    <div class="h-screen">
-      <header class="border-b border-muted flex h-16 items-center p-3">
-        <NuxtLink to="/" class="gap-2 inline-flex items-center">
+    <UHeader>
+      <template #title>
+        <div to="/" class="flex gap-2 items-center">
           <AppLogo class="-my-1 fill-current h-10" />
           <span class="font-extrabold text-3xl">Fléchettes</span>
-        </NuxtLink>
-        <div class="grow" />
+        </div>
+      </template>
+
+      <UNavigationMenu :items="items" />
+
+      <template #body>
+        <UNavigationMenu
+          :items="items"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
+      </template>
+
+      <template #right>
         <UColorModeButton />
         <AppSoundboard />
         <AppSettings />
@@ -20,12 +48,15 @@ import { fr } from "@nuxt/ui/locale";
           to="https://github.com/flozdra/flechettes"
           target="_blank"
           icon="i-simple-icons-github"
+          aria-label="GitHub"
         />
-      </header>
+      </template>
+    </UHeader>
 
-      <main>
+    <UMain>
+      <NuxtLayout>
         <NuxtPage />
-      </main>
-    </div>
+      </NuxtLayout>
+    </UMain>
   </UApp>
 </template>

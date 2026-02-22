@@ -47,7 +47,7 @@ watch(
 
 <template>
   <div
-    class="border border-muted duration-500 flex overflow-hidden relative rounded-2xl transition-colors whitespace-nowrap"
+    class="duration-500 flex overflow-hidden relative ring ring-muted rounded-lg transition-colors whitespace-nowrap"
   >
     <div
       class="flex-1 grid p-3 text-4xl"

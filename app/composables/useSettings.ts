@@ -1,13 +1,13 @@
 import { useLocalStorage } from "@vueuse/core";
 
 interface Settings {
-  alwaysShowDartMobile: boolean;
+  dartboard: "dartboard" | "table";
   autoConfirmThrows: boolean;
   highlightNumbers: boolean;
 }
 
 const defaultSettings: Settings = {
-  alwaysShowDartMobile: false,
+  dartboard: "dartboard",
   autoConfirmThrows: true,
   highlightNumbers: true,
 };
@@ -20,8 +20,8 @@ export function useSettings() {
   // Ensure all settings are present (useful for future updates)
   for (const key in defaultSettings) {
     if (!(key in settings.value)) {
-      settings.value[key as keyof Settings] =
-        defaultSettings[key as keyof Settings];
+      // @ts-expect-error - We know the keys and settings match
+      settings.value[key] = defaultSettings[key];
     }
   }
 

@@ -21,10 +21,16 @@ const shortcuts = [
         <div>
           <p class="font-semibold mb-3 text-highlighted">Préférences</p>
           <div class="space-y-3">
-            <USwitch
-              v-model="settings.alwaysShowDartMobile"
-              label="Toujours afficher la cible sous forme de tableau"
+            <URadioGroup
+              v-model="settings.dartboard"
+              variant="table"
+              orientation="horizontal"
+              :items="[
+                { label: 'Cible classique', value: 'dartboard' },
+                { label: 'Tableau de score', value: 'table' },
+              ]"
             />
+
             <USwitch
               v-model="settings.autoConfirmThrows"
               label="Confirmation automatique des lancés"

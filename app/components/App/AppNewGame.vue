@@ -65,7 +65,6 @@ function createNewGame() {
               { label: 'Halve It', value: 'halve-it' },
             ]"
             size="lg"
-            :ui="{ item: 'grow text-center' }"
           />
         </UFormField>
 
@@ -91,7 +90,6 @@ function createNewGame() {
                 { label: '301', value: 301 },
                 { label: '501', value: 501 },
               ]"
-              :ui="{ item: 'grow text-center' }"
             />
           </UFormField>
 

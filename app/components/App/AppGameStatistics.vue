@@ -50,6 +50,8 @@ const bestPlayers = computed(() => {
   return games.value
     .reduce(
       (acc, game) => {
+        if (game.players.length < 2) return acc; // Skip solo games
+
         // Count games for each player
         for (const player of game.players) {
           const existing = acc.find((p) => p.name === player.name);
@@ -68,12 +70,15 @@ const bestPlayers = computed(() => {
       },
       [] as { name: string; wins: number; games: number }[],
     )
-    .sort((a, b) => b.wins / b.games - a.wins / a.games);
+    .map((p) => ({
+      name: p.name,
+      wins: p.wins,
+      games: p.games,
+      ratio: ((p.wins / p.games) * 100).toFixed(1),
+      wilsonScore: wilsonScore(p.wins, p.games),
+    }))
+    .sort((a, b) => b.wilsonScore - a.wilsonScore);
 });
-
-function ratio(wins: number, games: number) {
-  return games > 0 ? ((wins / games) * 100).toFixed(1) : "0.0";
-}
 </script>
 
 <template>
@@ -96,11 +101,7 @@ function ratio(wins: number, games: number) {
       <p class="text-muted text-xs">
         {{ bestPlayers[0]?.wins || 0 }} victoires ·
         {{ bestPlayers[0]?.games || 0 }} parties ·
-        {{
-          bestPlayers[0]
-            ? ratio(bestPlayers[0].wins, bestPlayers[0].games)
-            : "0.0"
-        }}%
+        {{ bestPlayers[0]?.ratio || "0.0" }}%
       </p>
     </div>
     <div class="p-3 ring ring-default rounded-lg">
@@ -109,11 +110,7 @@ function ratio(wins: number, games: number) {
       <p class="text-muted text-xs">
         {{ bestPlayers[1]?.wins || 0 }} victoires ·
         {{ bestPlayers[1]?.games || 0 }} parties ·
-        {{
-          bestPlayers[1]
-            ? ratio(bestPlayers[1].wins, bestPlayers[1].games)
-            : "0.0"
-        }}%
+        {{ bestPlayers[1]?.ratio || "0.0" }}%
       </p>
     </div>
   </div>

@@ -48,9 +48,17 @@ defineShortcuts({
           :is-current-player="currentPlayer === i"
         />
       </div>
-
-      <GameDartboardMobile
-        class="min-h-[calc(100vh_-_348px)]"
+      <GameDartboardTable
+        v-if="settings.dartboard === 'table'"
+        class="min-h-[calc(100vh-344px)]"
+        :disabled="waitingForConfirmation"
+        :hits="currentThrows"
+        :highlights="roundTargets"
+        @hit="recordThrow"
+      />
+      <GameDartboard
+        v-else
+        class="min-h-[calc(100vh-344px)]"
         :disabled="waitingForConfirmation"
         :hits="currentThrows"
         :highlights="roundTargets"
@@ -80,9 +88,9 @@ defineShortcuts({
         <SplitterResizeHandle class="bg-accented w-px" />
 
         <SplitterPanel class="col-span-2 flex-1 p-3 space-y-3">
-          <GameDartboardMobile
-            v-if="settings.alwaysShowDartMobile"
-            class="min-h-[calc(100vh-192px)]"
+          <GameDartboardTable
+            v-if="settings.dartboard === 'table'"
+            class="min-h-[calc(100vh-194px)]"
             :disabled="waitingForConfirmation"
             :hits="currentThrows"
             :highlights="roundTargets"
@@ -90,7 +98,7 @@ defineShortcuts({
           />
           <GameDartboard
             v-else
-            class="max-h-[calc(100vh-192px)]"
+            class="max-h-[calc(100vh-194px)]"
             :disabled="waitingForConfirmation"
             :hits="currentThrows"
             :highlights="roundTargets"
